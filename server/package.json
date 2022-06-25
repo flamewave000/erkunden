@@ -1,0 +1,23 @@
+{
+	"name": "erkunden",
+	"version": "1.0.0",
+	"description": "Erkunden",
+	"main": "index.js",
+	"private": true,
+	"author": "flamewave000",
+	"license": "UNLICENSED",
+	"scripts": {
+		"build": "tsc",
+		"watch": "tsc -w",
+		"clean": "rm -fR dist/* ./.build",
+		"debug": "node ./dist/index.js --debug",
+		"start": "node ./dist/index.js",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"dependencies": {
+		"ws": "^8.8.0"
+	},
+	"devDependencies": {
+		"@types/ws": "^8.5.3"
+	}
+}
