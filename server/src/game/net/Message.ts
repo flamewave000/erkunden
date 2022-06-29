@@ -1,8 +1,7 @@
 import { WebSocket } from "ws";
-import { isInt } from "../utils/NumberCheck";
-import { CommandHeader, ErrorHeader } from "./Commands";
+import { isInt } from "../../utils/NumberCheck";
+import Header from "./Headers";
 
-type Header = CommandHeader | ErrorHeader;
 type Payload = boolean | number | string | Object;
 
 class MessageBuilder {
@@ -56,8 +55,8 @@ class MessageBuilder {
 
 	private pack(): string {
 		return this._last_serialized = (this._payload !== undefined && this._payload !== null)
-			? this._header.toString(16) + ':' + this.serializePayload()
-			: this._header.toString(16);
+			? this._header.code.toString(16) + ':' + this.serializePayload()
+			: this._header.code.toString(16);
 	}
 }
 
@@ -80,13 +79,15 @@ export default class Message {
 	get header() { return this._header; }
 	get payload() { return this._payload; }
 
-	get isError(): boolean { return !!((this._header.valueOf() as number) & 0x8000); }
+	get isError(): boolean { return !!((this._header.valueOf() as number) & Header.ERROR); }
 	get isBoolean(): boolean { return this._type === 'y' || this._type === 'n'; }
 	get isInteger(): boolean { return this._type === 'i'; }
 	get isFloat(): boolean { return this._type === 'f'; }
 	get isNumber(): boolean { return this.isFloat || this.isInteger; }
 	get isString(): boolean { return this._type === 's'; }
 	get isObject(): boolean { return this._type === 'o'; }
+
+	private constructor() { }
 
 	static build(header: Header): MessageBuilder {
 		return new MessageBuilder(header);
@@ -95,7 +96,7 @@ export default class Message {
 	static parse(data: string): Message {
 		const message = new Message();
 		const delimiter = data.indexOf(':');
-		message._header = parseInt(delimiter < 0 ? data : data.slice(0, delimiter), 16);
+		message._header = Header.from(parseInt(delimiter < 0 ? data : data.slice(0, delimiter), 16));
 		if (delimiter >= 0) {
 			message._type = data[delimiter + 1];
 			if (!(message._type in Parser))
@@ -103,14 +104,6 @@ export default class Message {
 			message._payload = Parser[message._type](data.slice(delimiter + 2));
 		}
 		return message;
-	}
-
-	static success(socket: WebSocket, data?: Payload) {
-		this.send(socket, CommandHeader.Success, data);
-	}
-
-	static failed(socket: WebSocket, error: ErrorHeader, reason?: Payload) {
-		this.send(socket, error, reason);
 	}
 
 	static send(socket: WebSocket, header: Header, payload?: Payload) {

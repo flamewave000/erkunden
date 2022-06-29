@@ -1,4 +1,4 @@
-import PromiseResolver from "../utils/PromiseResolver";
+import PromiseResolver from "../../utils/PromiseResolver";
 import Message from "./Message";
 
 export default class Request {

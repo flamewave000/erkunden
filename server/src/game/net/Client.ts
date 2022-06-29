@@ -1,9 +1,10 @@
 import { WebSocket, RawData } from "ws";
 import { randomUUID } from 'crypto';
-import { OwnedEvent } from "../utils/Event";
+import { OwnedEvent } from "../../utils/Event";
 import Message from "./Message";
 import CloseEvent from "./CloseEvent";
 import Request from "./Request";
+import Header from "./Headers";
 
 export default class Client {
 	// #region Fields
@@ -53,7 +54,7 @@ export default class Client {
 
 	static create(socket: WebSocket) {
 		const client = new Client(socket);
-		Message.success(socket, client.id);
+		Message.send(socket, Header.BindClientID, client.id);
 		return client;
 	}
 }

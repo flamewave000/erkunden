@@ -1,0 +1,13 @@
+{
+	"api": {
+		"host": "localhost",
+		"port": 8080,
+		"portSSL": 8443,
+		"ssl": false
+		// "key": "",
+		// "cert": ""
+	},
+	"game": {
+		"port": 8081
+	}
+}
