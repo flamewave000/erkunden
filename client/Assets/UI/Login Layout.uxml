@@ -1,0 +1,19 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/Styles/Core.uss?fileID=7433441132597879392&amp;guid=a75b491ecf176a449a418e33da3a4b09&amp;type=3#Core" />
+    <ui:VisualElement name="Background" style="align-items: center; justify-content: center; background-image: url(&apos;project://database/Assets/Textures/Nebula.jpg?fileID=2800000&amp;guid=1f8c3f0158ccb0846acd131f82129169&amp;type=3#Nebula&apos;); flex-grow: 1; -unity-background-scale-mode: scale-and-crop;">
+        <ui:Button display-tooltip-when-elided="true" tooltip="Settings" name="Settings" style="position: absolute; top: 20px; right: 20px; width: 48px; height: 48px; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; margin-bottom: 0; margin-top: 0; margin-right: 0; margin-left: 0; background-image: url(&apos;project://database/Assets/Textures/cog-solid.png?fileID=2800000&amp;guid=b6f4ece94773bc54f829cd042da188fc&amp;type=3#cog-solid&apos;); background-color: rgba(188, 188, 188, 0); border-left-width: 0; border-right-width: 0; border-top-width: 0; border-bottom-width: 0;" />
+        <ui:Label text="ERKUNDEN" display-tooltip-when-elided="true" name="Title" style="-unity-font: url(&apos;project://database/Assets/Fonts/cubic.ttf?fileID=12800000&amp;guid=9014156737d87e94cb248fa43c1f4f62&amp;type=3#cubic&apos;); -unity-font-style: bold; color: rgb(255, 255, 255); font-size: 60px; -unity-text-align: middle-center; position: absolute; top: 50px;" />
+        <ui:TextField picking-mode="Ignore" label="Username" name="Username" class="BaseTextField" style="margin-bottom: 20px; width: 250px; max-width: none; min-width: auto;" />
+        <ui:TextField picking-mode="Ignore" label="Password" name="Password" password="true" class="BaseTextField" style="margin-bottom: 20px; width: 250px;" />
+        <ui:VisualElement name="LoginForm" style="display: flex;">
+            <ui:Button text="Login" display-tooltip-when-elided="true" name="LoginButton" class="LargeButton" style="width: 250px;" />
+            <ui:Button text="Create Account" display-tooltip-when-elided="true" name="ShowCreateAccountButton" class="LargeButton" style="width: 250px; margin-top: 10px; margin-bottom: 2px;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="CreateAccountForm" style="visibility: visible; display: none;">
+            <ui:TextField picking-mode="Ignore" label="Repeat Password" name="RepeatPassword" password="true" class="BaseTextField" style="margin-bottom: 20px; width: 250px;" />
+            <ui:Button text="Submit" display-tooltip-when-elided="true" name="CreateAccountButton" class="LargeButton" style="width: 250px; margin-top: 2px; margin-bottom: 10px;" />
+            <ui:Button text="Back" display-tooltip-when-elided="true" name="BackButton" class="LargeButton" style="width: 250px;" />
+        </ui:VisualElement>
+        <ui:Label text="&lt; ERROR MESSAGE &gt;" display-tooltip-when-elided="true" name="ErrorMessage" style="background-color: rgba(255, 255, 255, 0); color: rgb(255, 255, 255); -unity-font-style: bold; display: flex; visibility: hidden;" />
+    </ui:VisualElement>
+</ui:UXML>

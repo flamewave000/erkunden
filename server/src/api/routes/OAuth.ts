@@ -14,7 +14,7 @@ const Errors = {
 }
 export default class OAuth extends Router {
 	registerRoutes(router: express.Router): void {
-		router.put('/auth', this.authenticate.bind(this));
+		router.post('/auth', this.authenticate.bind(this));
 		router.delete('/auth', this.unauthenticate.bind(this));
 	}
 

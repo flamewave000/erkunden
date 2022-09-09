@@ -2,6 +2,7 @@ import express from 'express';
 import { StatusCodes } from 'http-status-codes';
 import Router from './Router';
 import Authenticator from '../Authenticator';
+import * as Tags from '../../Tags';
 
 
 const Errors = {
@@ -9,7 +10,7 @@ const Errors = {
 	NoUser: { code: StatusCodes.BAD_REQUEST, error: "missing_username" },
 	NoPass: { code: StatusCodes.BAD_REQUEST, error: "missing_password" },
 	NoNewPass: { code: StatusCodes.BAD_REQUEST, error: "missing_new_password" },
-	UserExists: { code: StatusCodes.BAD_REQUEST, error: "user_exists" },
+	UserExists: { code: StatusCodes.NOT_ACCEPTABLE, error: "user_exists" },
 	UserNonexistant: { code: StatusCodes.NOT_FOUND, error: "user_does_not_exist" },
 	MissingUser: { code: StatusCodes.BAD_REQUEST, error: "missing_user_id" },
 	BadToken: { code: StatusCodes.FORBIDDEN, error: "invalid_token" },
@@ -18,8 +19,8 @@ const Errors = {
 export default class Accounts extends Router {
 
 	registerRoutes(router: express.Router): void {
-		router.get('/account', this.getAccount.bind(this));
-		router.get('/account', this.checkAccountExists.bind(this));
+		router.get('/account/:username', this.getAccount.bind(this));
+		router.head('/account/:username', this.checkAccountExists.bind(this));
 		router.post('/account', this.newAccount.bind(this));
 		router.put('/account/username', this.updateUsername.bind(this));
 		router.put('/account/password', this.updatePassword.bind(this));
@@ -61,8 +62,8 @@ export default class Accounts extends Router {
 	}
 
 	private async checkAccountExists(req: express.Request, res: express.Response) {
-		if (!req.body.username) res.sendStatus(StatusCodes.BAD_REQUEST);
-		else if (!await this.get('users', req.body.username)) res.sendStatus(StatusCodes.NOT_FOUND);
+		if (!req.params.username) res.sendStatus(StatusCodes.BAD_REQUEST);
+		else if (!await this.get('users', req.params.username)) res.sendStatus(StatusCodes.NOT_FOUND);
 		else res.sendStatus(StatusCodes.OK);
 	}
 
@@ -105,6 +106,7 @@ export default class Accounts extends Router {
 		};
 		// Store the new User Data
 		await this.redis.hSet('user:' + userId, user);
+		this.LOG(Tags.Color.FgGreen + `: New Account - "${req.body.user}"`);
 		// Return the new User ID
 		res.json({ user_id: userId });
 	}

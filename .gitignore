@@ -1,0 +1,7 @@
+.vs/
+obj/
+Logs/
+Library/
+*.csproj.user
+Examples\ &\ Extras/
+Documentation/
