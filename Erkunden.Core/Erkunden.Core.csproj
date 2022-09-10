@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <TargetFramework>netstandard2.1</TargetFramework>
+	  <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Erkunden.ECS\Erkunden.ECS.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Components\Graphical\" />
+    <Folder Include="Math\" />
+  </ItemGroup>
+
+</Project>
