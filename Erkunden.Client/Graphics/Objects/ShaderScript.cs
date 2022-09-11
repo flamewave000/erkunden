@@ -4,23 +4,22 @@ using System.Text;
 using Erkunden.Core.Util;
 using OpenTK.Graphics.OpenGL4;
 
-namespace Erkunden.Client.Graphics
+namespace Erkunden.Client.Graphics.Objects
 {
-	public partial class Shader : GraphicsObject, IDisposable
+	public partial class ShaderScript : GraphicsObject, IDisposable
 	{
 		public string Path { get; private set; }
 		public string? Source { get; private set; } = null;
 		public string? LastError { get; private set; } = null;
 		public ShaderType Type { get; private set; }
 
-		public Shader(string path, ShaderType type)
+		public ShaderScript(string path, ShaderType type)
 		{
 			Path = path;
 			Type = type;
 		}
-		~Shader() { Dispose(); }
 
-		private void Build()
+		public void Build()
 		{
 			if (!IsDisposed) return;
 			Log.WriteLine($"@yellow;Compiling @Magenta;{Type}:{Handle}");

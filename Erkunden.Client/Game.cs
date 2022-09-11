@@ -1,7 +1,10 @@
-﻿using Erkunden.Client.AssetManagement;
+﻿using System;
+using System.Runtime.InteropServices;
+using Erkunden.Client.AssetManagement;
 using Erkunden.Client.AssetManagement.Materials;
 using Erkunden.Client.AssetManagement.Models;
-using Erkunden.Client.Graphics;
+using Erkunden.Client.AssetManagement.Textures;
+using Erkunden.Client.Graphics.Objects;
 using Erkunden.Core.Util;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
@@ -13,7 +16,7 @@ namespace Erkunden.Client
 	internal class Game : GameWindow
 	{
 		Model? Triangle = null;
-		Shader.Program Program;
+		Shader Shader;
 
 		AssetProvider Assets = new AssetProvider();
 
@@ -23,32 +26,58 @@ namespace Erkunden.Client
 			Size = new Vector2i(width, height)
 		})
 		{
-			Program = new Shader.Program(new Shader[]
+			Shader = new Shader(new ShaderScript[]
 			{
-				new Shader("Assets/Shaders/basic_vert.glsl", ShaderType.VertexShader),
-				new Shader("Assets/Shaders/basic_frag.glsl", ShaderType.FragmentShader)
+				new ShaderScript("Assets/Shaders/basic_vert.glsl", ShaderType.VertexShader),
+				new ShaderScript("Assets/Shaders/basic_frag.glsl", ShaderType.FragmentShader)
 			});
 
 			ObjParser.Register(Assets);
 			MtlParser.Register(Assets);
+			ImageSharpParser.Register(Assets);
 		}
 
 		protected override void OnLoad()
 		{
 			Log.WriteLine("@blue;Game::OnLoad()");
 			Log.Indent();
-			GL.ClearColor(Color4.CornflowerBlue);
 
-			Assets.LoadAsset("Assets/Models/triangle.obj");
+			GL.Enable(EnableCap.DebugOutput);
+			GL.DebugMessageCallback(DebugMessageHandler, IntPtr.Zero);
 
-			Triangle = Assets.Get<Model>("Triangle");
+			GL.ClearColor(new Color4(32, 32, 32, 255));
 
-			Program.Build();
+			Assets.LoadAsset("Assets/Models/Plane.obj");
 
-			Triangle.Initialize(Program);
+			Triangle = Assets.Get<Model>("Plane");
+
+			Shader.Build();
+
+			Triangle.Initialize(Shader);
 
 			base.OnLoad();
 			Log.Dedent();
+		}
+
+		private void DebugMessageHandler(DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
+		{
+			switch (severity)
+			{
+				case DebugSeverity.DebugSeverityHigh:
+					Log.WriteLine($"@red;{source}:{type}:{id}:{severity}");
+					break;
+				case DebugSeverity.DebugSeverityMedium:
+					Log.WriteLine($"@yellow;{source}:{type}:{id}:{severity}");
+					break;
+				case DebugSeverity.DebugSeverityLow:
+					Log.WriteLine($"{source}:{type}:{id}:{severity}");
+					break;
+				case DebugSeverity.DontCare:
+				case DebugSeverity.DebugSeverityNotification:
+				default:
+					return;
+			}
+			Log.WriteLine(Marshal.PtrToStringAnsi(message, length), indent: true);
 		}
 
 		protected override void OnUnload()
@@ -60,7 +89,8 @@ namespace Erkunden.Client
 			GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
 
 			Triangle?.Dispose();
-			Program.Dispose();
+			Shader.Dispose();
+			Assets.Dispose();
 
 			base.OnUnload();
 			Log.Dedent();
@@ -76,8 +106,8 @@ namespace Erkunden.Client
 		{
 			GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-			Program.Bind();
-			Triangle?.Draw();
+			Shader.Bind();
+			Triangle?.Draw(Shader);
 
 			Context.SwapBuffers();
 			base.OnRenderFrame(args);
@@ -86,6 +116,7 @@ namespace Erkunden.Client
 		protected override void OnUpdateFrame(FrameEventArgs args)
 		{
 			base.OnUpdateFrame(args);
+			GLExt.CheckErrors();
 		}
 	}
 }

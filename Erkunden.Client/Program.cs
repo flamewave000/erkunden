@@ -7,12 +7,12 @@ namespace Erkunden.Client
 		static void Main(string[] args)
 		{
 			Log.WriteLine("Starting Game");
-			using (Game game = new Game(800, 600, "Erkunden"))
+			using (Game game = new Game(800, 800, "Erkunden"))
 			{
 				game.Run();
 			}
 #if DEBUG
-			Log.Pause();
+			//Log.Pause();
 #endif
 		}
 	}

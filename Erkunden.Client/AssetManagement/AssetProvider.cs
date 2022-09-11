@@ -8,7 +8,7 @@ using Erkunden.Core.Util;
 
 namespace Erkunden.Client.AssetManagement
 {
-	public partial class AssetProvider
+	public partial class AssetProvider : IDisposable
 	{
 		private static Type ModelType = typeof(Model);
 		private static Type MaterialType = typeof(Material);
@@ -61,6 +61,7 @@ namespace Erkunden.Client.AssetManagement
 
 		public void LoadAsset(string path, string? relativeTo = null)
 		{
+			path = FileUtil.PlatformPath(path);
 			// Ignore asset files that have already been loaded
 			if (LoadedAssets.Contains(path)) return;
 
@@ -83,6 +84,14 @@ namespace Erkunden.Client.AssetManagement
 				TextureParsers[ext].Parse(path, Textures, this);
 			else
 				throw new Exception("Unsupported File Type: " + path);
+		}
+
+		public void Dispose()
+		{
+			LoadedAssets.Clear();
+			Models.Dispose();
+			Materials.Dispose();
+			Textures.Dispose();
 		}
 	}
 }

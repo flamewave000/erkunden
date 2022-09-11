@@ -8,5 +8,7 @@ namespace Erkunden.Client.Graphics
 		public bool IsDisposed => Handle <= 0;
 		public abstract void Bind();
 		public abstract void Dispose();
+
+		~GraphicsObject() { Dispose(); }
 	}
 }

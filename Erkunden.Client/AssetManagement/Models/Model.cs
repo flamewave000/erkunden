@@ -1,5 +1,5 @@
-﻿using Erkunden.Client.Graphics;
-using Erkunden.Client.Graphics.Data;
+﻿using Erkunden.Client.Graphics.Data;
+using Erkunden.Client.Graphics.Objects;
 using OpenTK.Graphics.OpenGL4;
 
 namespace Erkunden.Client.AssetManagement.Models
@@ -14,7 +14,7 @@ namespace Erkunden.Client.AssetManagement.Models
 
 		public Vector3ArrayData Vertices = new Vector3ArrayData();
 		public Vector3ArrayData Normals = new Vector3ArrayData();
-		public Vector3ArrayData TexCoords = new Vector3ArrayData();
+		public Vector2ArrayData TexCoords = new Vector2ArrayData();
 		public Part[] Parts;
 
 		public override bool IsDisposed => VertexArrayObject?.IsDisposed ?? false;
@@ -23,7 +23,7 @@ namespace Erkunden.Client.AssetManagement.Models
 		public Model(string Name, Part[] parts) : base(Name) { Parts = parts; }
 		~Model() { Dispose(); }
 
-		public void Initialize(Shader.Program program)
+		public void Initialize(Shader program)
 		{
 			if (Ready) return;
 			VertexArrayObject = VertexArrayObject.Create();
@@ -31,23 +31,24 @@ namespace Erkunden.Client.AssetManagement.Models
 
 			VertexBuffer = VertexBuffer.Create(BufferTarget.ArrayBuffer);
 			VertexBuffer.Bind();
-			VertexBuffer.SetData(Vertices.Data, Vertices.TotalByteSize, BufferUsageHint.StaticDraw);
-			VertexArrayObject.EnableVector3AttribPointer(program.GetAttribLocation("aPosition"));
-			// If there are normals, create the buffer for them
-			if (Normals.Data.Length > 0)
-			{
-				NormalBuffer = VertexBuffer.Create(BufferTarget.ArrayBuffer);
-				NormalBuffer.Bind();
-				NormalBuffer.SetData(Normals.Data, Normals.TotalByteSize, BufferUsageHint.StaticDraw);
-				VertexArrayObject.EnableVector3AttribPointer(program.GetAttribLocation("aNormal"));
-			}
+			VertexBuffer.SetData(Vertices.Data, Vertices.ElementSize, BufferUsageHint.StaticDraw);
+			VertexArrayObject.EnableVector3AttribPointer(program.GetAttribLocation("a_Position"));
 
-			if (TexCoords.Data.Length > 0)
+			// If there are textyre coords, create the buffer for them
+			if (TexCoords.Data.Length > 0 && program.GetAttribLocation("a_TexCoord") >= 0)
 			{
 				TexCoordBuffer = VertexBuffer.Create(BufferTarget.ArrayBuffer);
 				TexCoordBuffer.Bind();
-				TexCoordBuffer.SetData(TexCoords.Data, TexCoords.TotalByteSize, BufferUsageHint.StaticDraw);
-				VertexArrayObject.EnableVector3AttribPointer(program.GetAttribLocation("aTexCoord"));
+				TexCoordBuffer.SetData(TexCoords.Data, TexCoords.ElementSize, BufferUsageHint.StaticDraw);
+				VertexArrayObject.EnableVector2AttribPointer(program.GetAttribLocation("a_TexCoord"));
+			}
+			// If there are normals, create the buffer for them
+			if (Normals.Data.Length > 0 && program.GetAttribLocation("a_Normal") >= 0)
+			{
+				NormalBuffer = VertexBuffer.Create(BufferTarget.ArrayBuffer);
+				NormalBuffer.Bind();
+				NormalBuffer.SetData(Normals.Data, Normals.ElementSize, BufferUsageHint.StaticDraw);
+				VertexArrayObject.EnableVector3AttribPointer(program.GetAttribLocation("a_Normal"));
 			}
 
 			// Unbind the vertex buffers and object
@@ -68,11 +69,11 @@ namespace Erkunden.Client.AssetManagement.Models
 			foreach (var part in Parts) part.Dispose();
 		}
 
-		public void Draw()
+		public void Draw(Shader shader)
 		{
 			if (VertexArrayObject == null) return;
 			VertexArrayObject.Bind();
-			foreach (var part in Parts) part.Draw();
+			foreach (var part in Parts) part.Draw(shader);
 		}
 
 	}

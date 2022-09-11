@@ -36,7 +36,15 @@ namespace Erkunden.Client.AssetManagement
 			vec.Z = tokens.Length > 2 ? int.Parse(tokens[2]) : 0;
 			return vec;
 		}
-		protected static string GetParentDirectory(string path) => new FileInfo(path).Directory.FullName;
+		protected static Color4 ParseColor4(Span<string> tokens)
+		{
+			var col = new Color4();
+			col.R = tokens.Length > 0 ? float.Parse(tokens[0]) : 0;
+			col.G = tokens.Length > 1 ? float.Parse(tokens[1]) : 0;
+			col.B = tokens.Length > 2 ? float.Parse(tokens[2]) : 0;
+			col.A = tokens.Length > 3 ? float.Parse(tokens[3]) : 1;
+			return col;
+		}
 	}
 
 	public interface ModelParser : AssetParser<Model> { }

@@ -1,6 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 
-namespace Erkunden.Client.Graphics
+namespace Erkunden.Client.Graphics.Objects
 {
 	public class VertexBuffer : GraphicsObject
 	{

@@ -7,8 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Images\container.jpg" />
+    <None Remove="Assets\Materials\Plane.mtl" />
+    <None Remove="Assets\Models\Plane.obj" />
     <None Remove="Assets\Models\triangle.mtl" />
-    <None Remove="Assets\Models\triangle.obj" />
     <None Remove="Assets\Shaders\BasicShader.frag" />
     <None Remove="Assets\Shaders\BasicShader.vert" />
     <None Remove="Assets\Shaders\basic_frag.glsl" />
@@ -16,10 +18,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Assets\Models\triangle.mtl">
+    <Content Include="Assets\Images\Container.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\triangle.obj">
+    <Content Include="Assets\Materials\Plane.mtl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Models\Plane.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Shaders\basic_frag.glsl">
@@ -32,6 +37,7 @@
 
   <ItemGroup>
     <PackageReference Include="OpenTK" Version="4.7.5" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
   </ItemGroup>
 
   <ItemGroup>

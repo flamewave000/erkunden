@@ -20,6 +20,7 @@ namespace Erkunden.Client.AssetManagement.Materials
 		public void Parse(string path, AssetStore<Material> assets, AssetProvider provider)
 		{
 			Material? material = null;
+			string texPath;
 
 			Action<string?> pushMaterial = name =>
 			{
@@ -44,15 +45,15 @@ namespace Erkunden.Client.AssetManagement.Materials
 							continue;
 						// Ambient Colour
 						case "Ka":
-							material!.AmbientColor = MaterialParser.ParseVector3(tokens.AsSpan(1));
+							material!.AmbientColor = MaterialParser.ParseColor4(tokens.AsSpan(1));
 							continue;
 						// Diffuse Colour
 						case "Kd":
-							material!.DiffuseColor = MaterialParser.ParseVector3(tokens.AsSpan(1));
+							material!.DiffuseColor = MaterialParser.ParseColor4(tokens.AsSpan(1));
 							continue;
 						// Specular Colour
 						case "Ks":
-							material!.SpecularColor = MaterialParser.ParseVector3(tokens.AsSpan(1));
+							material!.SpecularColor = MaterialParser.ParseColor4(tokens.AsSpan(1));
 							continue;
 						// Shininess Factor
 						case "Ns":
@@ -60,23 +61,27 @@ namespace Erkunden.Client.AssetManagement.Materials
 							continue;
 						// Ambient Occlusion Map
 						case "map_Ka":
-							provider.LoadAsset(tokens[1], MaterialParser.GetParentDirectory(path));
-							material!.AmbientMap = provider.Get<Texture>(tokens[1]);
+							texPath = FileUtil.PlatformPath(tokens[1]);
+							provider.LoadAsset(texPath, FileUtil.GetParentDirectory(path));
+							material!.AmbientMap = provider.Get<Texture>(Path.GetFileNameWithoutExtension(texPath));
 							continue;
 						// Diffuse Map
 						case "map_Kd":
-							provider.LoadAsset(tokens[1], MaterialParser.GetParentDirectory(path));
-							material!.DiffuseMap = provider.Get<Texture>(tokens[1]);
+							texPath = FileUtil.PlatformPath(tokens[1]);
+							provider.LoadAsset(texPath, FileUtil.GetParentDirectory(path));
+							material!.DiffuseMap = provider.Get<Texture>(Path.GetFileNameWithoutExtension(texPath));
 							continue;
 						// Specular Map
 						case "map_Ks":
-							provider.LoadAsset(tokens[1], MaterialParser.GetParentDirectory(path));
-							material!.SpecularMap = provider.Get<Texture>(tokens[1]);
+							texPath = FileUtil.PlatformPath(tokens[1]);
+							provider.LoadAsset(texPath, FileUtil.GetParentDirectory(path));
+							material!.SpecularMap = provider.Get<Texture>(Path.GetFileNameWithoutExtension(texPath));
 							continue;
 						// Normal Map
 						case "bump":
-							provider.LoadAsset(tokens[1], MaterialParser.GetParentDirectory(path));
-							material!.NormalMap = provider.Get<Texture>(tokens[1]);
+							texPath = FileUtil.PlatformPath(tokens[1]);
+							provider.LoadAsset(texPath, FileUtil.GetParentDirectory(path));
+							material!.NormalMap = provider.Get<Texture>(Path.GetFileNameWithoutExtension(texPath));
 							continue;
 					}
 				}

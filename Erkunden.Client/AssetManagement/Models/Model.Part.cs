@@ -1,6 +1,6 @@
 ﻿using Erkunden.Client.AssetManagement.Materials;
-using Erkunden.Client.Graphics;
 using Erkunden.Client.Graphics.Data;
+using Erkunden.Client.Graphics.Objects;
 using OpenTK.Graphics.OpenGL4;
 
 namespace Erkunden.Client.AssetManagement.Models
@@ -11,6 +11,7 @@ namespace Erkunden.Client.AssetManagement.Models
 		{
 			private VertexBuffer? ElementBuffer = null;
 
+			public bool Smooth = false;
 			public Material? Material;
 			public UIntArrayData Indexes = new UIntArrayData();
 
@@ -24,7 +25,7 @@ namespace Erkunden.Client.AssetManagement.Models
 				if (!IsDisposed) return;
 				ElementBuffer = VertexBuffer.Create(BufferTarget.ElementArrayBuffer);
 				ElementBuffer.Bind();
-				ElementBuffer.SetData(Indexes.Data, Indexes.TotalByteSize, BufferUsageHint.StaticDraw);
+				ElementBuffer.SetData(Indexes.Data, Indexes.ElementSize, BufferUsageHint.StaticDraw);
 				VertexBuffer.Unbind(BufferTarget.ElementArrayBuffer);
 			}
 
@@ -33,10 +34,11 @@ namespace Erkunden.Client.AssetManagement.Models
 				ElementBuffer?.Dispose();
 			}
 
-			public void Draw()
+			public void Draw(Shader shader)
 			{
 				if (ElementBuffer == null) return;
 				ElementBuffer.Bind();
+				Material?.Bind(shader);
 				GL.DrawElements(PrimitiveType.Triangles, Indexes.Data.Length, DrawElementsType.UnsignedInt, 0);
 			}
 		}

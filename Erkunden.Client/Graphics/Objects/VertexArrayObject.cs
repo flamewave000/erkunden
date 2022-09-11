@@ -1,7 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
-namespace Erkunden.Client.Graphics
+namespace Erkunden.Client.Graphics.Objects
 {
 	public class VertexArrayObject : GraphicsObject
 	{
