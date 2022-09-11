@@ -1,7 +1,6 @@
-﻿
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 
-namespace Erkunden.Core.Components.Physics
+namespace Erkunden.Core.Components
 {
 	public struct Transform : ECS.Component
 	{

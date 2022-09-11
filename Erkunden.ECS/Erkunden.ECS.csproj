@@ -5,4 +5,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="OpenTK.Mathematics" Version="4.7.5" />
+  </ItemGroup>
+
 </Project>

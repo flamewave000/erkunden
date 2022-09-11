@@ -1,4 +1,5 @@
 ﻿using System;
+using Erkunden.Core.Util;
 
 namespace Erkunden.Server
 {
@@ -6,7 +7,8 @@ namespace Erkunden.Server
 	{
 		static void Main(string[] args)
 		{
-			Console.WriteLine("Hello World!");
+			Log.WriteLine("@red;Hello @blue;World @clr;!!");
+			Log.Pause();
 		}
 	}
 }

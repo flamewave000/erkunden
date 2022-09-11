@@ -1,6 +1,6 @@
 ﻿using OpenTK.Mathematics;
 
-namespace Erkunden.Core.Components.Physics
+namespace Erkunden.Core.Components
 {
 	public struct Velocity
 	{

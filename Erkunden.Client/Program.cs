@@ -1,5 +1,4 @@
-﻿using System;
-using OpenTK.Mathematics;
+﻿using Erkunden.Core.Util;
 
 namespace Erkunden.Client
 {
@@ -7,7 +6,14 @@ namespace Erkunden.Client
 	{
 		static void Main(string[] args)
 		{
-			Vector3 vec3;
+			Log.WriteLine("Starting Game");
+			using (Game game = new Game(800, 600, "Erkunden"))
+			{
+				game.Run();
+			}
+#if DEBUG
+			Log.Pause();
+#endif
 		}
 	}
 }

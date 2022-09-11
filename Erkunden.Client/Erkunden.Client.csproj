@@ -3,7 +3,36 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\Models\triangle.mtl" />
+    <None Remove="Assets\Models\triangle.obj" />
+    <None Remove="Assets\Shaders\BasicShader.frag" />
+    <None Remove="Assets\Shaders\BasicShader.vert" />
+    <None Remove="Assets\Shaders\basic_frag.glsl" />
+    <None Remove="Assets\Shaders\basic_vert.glsl" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\Models\triangle.mtl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Models\triangle.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Shaders\basic_frag.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Shaders\basic_vert.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OpenTK" Version="4.7.5" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Erkunden.Core\Erkunden.Core.csproj" />
