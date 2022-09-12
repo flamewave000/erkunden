@@ -31,5 +31,5 @@ void main()
 	vec4 diffuse = getColour(u_DiffuseColor, u_DiffuseTexture);
 	vec4 specular = getColour(u_SpecularColor, u_SpecularTexture);
 	vec4 normal = getColour(vec4(f_Normal, 0.0), u_NormalTexture);
-	FragColor = diffuse;
+	FragColor = diffuse * ambient;
 }
