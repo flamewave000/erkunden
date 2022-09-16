@@ -9,6 +9,13 @@ namespace Erkunden.Client.Graphics
 		public abstract void Bind();
 		public abstract void Dispose();
 
-		~GraphicsObject() { Dispose(); }
+		~GraphicsObject()
+		{
+			try
+			{
+				Dispose();
+			}
+			catch { }
+		}
 	}
 }

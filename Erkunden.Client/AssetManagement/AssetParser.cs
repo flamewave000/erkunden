@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Erkunden.Client.AssetManagement.Materials;
-using Erkunden.Client.AssetManagement.Models;
-using Erkunden.Client.AssetManagement.Textures;
 using OpenTK.Mathematics;
 
 namespace Erkunden.Client.AssetManagement
 {
-	public interface AssetParser<T> where T : Asset
+	public interface AssetParser
 	{
 		public string[] Extensions { get; }
-		public void Parse(string assetPath, AssetStore<T> store, AssetProvider provider);
+		public void Parse(FileInfo file, AssetStore store);
+		public IEnumerable<string> GetNames(FileInfo file);
+
+		public static string ConformName<T>(string assetName) where T : Asset => typeof(T).Name + "_" + assetName;
+		public static string ConformName(Type type, string assetName) => type.Name + "_" + assetName;
 
 		protected static Vector2 ParseVector2(Span<string> tokens)
 		{
@@ -46,8 +47,4 @@ namespace Erkunden.Client.AssetManagement
 			return col;
 		}
 	}
-
-	public interface ModelParser : AssetParser<Model> { }
-	public interface MaterialParser : AssetParser<Material> { }
-	public interface TextureParser : AssetParser<Texture> { }
 }

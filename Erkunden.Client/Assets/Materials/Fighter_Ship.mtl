@@ -1,0 +1,26 @@
+# Blender MTL File: 'None'
+# Material Count: 2
+
+newmtl Fighter_Ship_body
+Ns 50.000000
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.345100 0.345100 0.345100
+Ke 0.0 0.0 0.0
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ka ../Images/Fighter_Ship_body_diffuse.jpg
+map_Kd ../Images/Fighter_Ship_body_diffuse.jpg
+
+newmtl Fighter_Ship_wings
+Ns 50.000000
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.368600 0.368600 0.368600
+Ke 0.0 0.0 0.0
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ka ../Images/Fighter_Ship_wings_diffuse.jpg
+map_Kd ../Images/Fighter_Ship_wings_diffuse.jpg

@@ -5,37 +5,22 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Nullable>enable</Nullable>
     <Platforms>AnyCPU;ARM64</Platforms>
+    <AssemblyName>Erkunden</AssemblyName>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\Images\AwesomeFace.png" />
-    <None Remove="Assets\Images\container.jpg" />
-    <None Remove="Assets\Materials\Plane.mtl" />
-    <None Remove="Assets\Models\Plane.obj" />
-    <None Remove="Assets\Models\triangle.mtl" />
-    <None Remove="Assets\Shaders\BasicShader.frag" />
-    <None Remove="Assets\Shaders\BasicShader.vert" />
-    <None Remove="Assets\Shaders\basic_frag.glsl" />
-    <None Remove="Assets\Shaders\basic_vert.glsl" />
+    <Compile Remove="Assets\Images\Nebula\**" />
+    <EmbeddedResource Remove="Assets\Images\Nebula\**" />
+    <None Remove="Assets\Images\Nebula\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Assets\Images\AwesomeFace.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Container.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Materials\Plane.mtl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Models\Plane.obj">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Shaders\basic_frag.glsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Shaders\basic_vert.glsl">
+    <None Remove="Assets\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\**\*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

@@ -3,17 +3,27 @@ using System.Collections.Generic;
 
 namespace Erkunden.Client.AssetManagement
 {
-	public class AssetStore<T> : IDisposable where T : Asset
+	public class AssetStore : IDisposable
 	{
-		private Dictionary<string, T> Assets = new Dictionary<string, T>();
-		public bool Has(string name) => Assets.ContainsKey(name);
-		public T Get(string name) => Assets[name];
-		public void Register(string name, T asset) => Assets[name] = asset;
+		private Dictionary<string, Asset> assets = new Dictionary<string, Asset>();
+
+		public bool Has(string name)
+		{
+			assets.TryGetValue(name, out var assetRef);
+			return assetRef != null;
+		}
+		public bool TryGet(string name, out Asset? asset)
+		{
+			assets.TryGetValue(name, out asset);
+			return asset != null;
+		}
+		public Asset? Get(string name) => assets.TryGetValue(name, out var assetRef) ? assetRef : null;
+		public void Add(in string name, in Asset asset) => assets[name] = asset;
+		public bool Remove(in string name) => assets.Remove(name);
 
 		public void Dispose()
 		{
-			foreach (var asset in Assets.Values) asset.Dispose();
-			Assets.Clear();
+			assets.Clear();
 		}
 	}
 }

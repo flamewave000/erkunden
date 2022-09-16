@@ -8,6 +8,6 @@ namespace Erkunden.Core.Util
 
 		public static int ByteSize(this string value) => value.Length * sizeof(char);
 
-		public static string ReduceSpaces(this string value) => SpaceRedux.Replace(value, " ");
+		public static string ReduceSpaces(this string value, string substitute = " ") => SpaceRedux.Replace(value, substitute);
 	}
 }

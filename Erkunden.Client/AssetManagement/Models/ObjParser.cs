@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using Erkunden.Client.AssetManagement.Materials;
+using Erkunden.Client.Graphics.Data;
 using Erkunden.Core.Util;
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
 namespace Erkunden.Client.AssetManagement.Models
@@ -13,65 +15,64 @@ namespace Erkunden.Client.AssetManagement.Models
 	 * <summary>Parses the Wavefront Model file format <b>.OBJ</b></summary>
 	 * <see cref="https://en.wikipedia.org/wiki/Wavefront_.obj_file"/>
 	 */
-	public class ObjParser : ModelParser
+	public class ObjParser : AssetParser
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Register(AssetProvider provider) => provider.RegisterParser<ModelParser, Model>(new ObjParser());
+		public static void Register() => AssetProvider.RegisterParser(new ObjParser());
 
-		public string[] Extensions => new string[] { "obj", "object" };
-		public void Parse(string path, AssetStore<Model> store, AssetProvider provider)
+		public string[] Extensions { get; } = new string[] { ".obj" };
+		public void Parse(FileInfo file, AssetStore store)
 		{
 			string[] tokens;
 
-			// Model Data
-			Model? model = null;
+			string? modelName = null;
+			List<Model.Part> parts = new List<Model.Part>();
+			List<VertexTextureNormal> vertexTextureNormals = new List<VertexTextureNormal>();
 			List<Vector3> verts = new List<Vector3>();
-			List<Vector3> norms = new List<Vector3>();
 			List<Vector2> texcs = new List<Vector2>();
-			List<Vector3> normsTemp = new List<Vector3>();
-			List<Vector2> texcsTemp = new List<Vector2>();
+			List<Vector3> norms = new List<Vector3>();
 
 			// Model Face Data
-			List<Model.Part> parts = new List<Model.Part>();
-			Model.Part? currPart = null;
-			string[] indexA;
-			string[] indexB;
-			string[] indexC;
-			List<uint> indexes = new List<uint>();
+			string? partName = null;
+			Material material = Material.BasicMaterial.Value;
+			int indexOffset = 0;
+			int count = 0;
+			PrimitiveType primitiveType = PrimitiveType.Triangles;
 
 			Action<string?> pushPart = name =>
 			{
-				if (currPart != null)
+				if (partName != null)
 				{
-					currPart.Indexes.Data = indexes.ToArray();
-					parts.Add(currPart);
+					parts.Add(Model.Part.CreateWithOffset(partName, count, indexOffset, material, primitiveType));
+					indexOffset += count;
+					partName = null;
+					material = Material.BasicMaterial.Value;
+					count = 0;
 				}
-				currPart = name != null ? new Model.Part(name) : null;
-				indexes.Clear();
-				norms.Resize(verts.Count);
-				texcs.Resize(verts.Count);
+				if (name != null)
+				{
+					partName = name;
+					AssetProvider.TryGet(name, ref material);
+				}
 			};
 			Action<string?> pushModel = name =>
 			{
 				pushPart(null);
-				if (model != null)
+				if (modelName != null)
 				{
-					Log.WriteLine("@green;Loaded Model:@magenta;    " + model.Name, indent: true);
-					model.Vertices.Data = verts.ToArray();
-					model.Normals.Data = norms.ToArray();
-					model.TexCoords.Data = texcs.ToArray();
-					model.Parts = parts.ToArray();
-					store.Register(model.Name, model);
+					Log.WriteLine($"@green;Loaded Model:@magenta;    {modelName}@clr - {parts.Count} Parts" + modelName, indent: true);
+					store.Add(AssetParser.ConformName<Model>(modelName),
+						new Model(modelName, vertexTextureNormals.ToArray(), parts.ToArray()));
+					vertexTextureNormals.Clear();
+					parts.Clear();
+					verts.Clear();
+					texcs.Clear();
+					norms.Clear();
 				}
-				verts.Clear();
-				norms.Clear();
-				texcs.Clear();
-				normsTemp.Clear();
-				texcsTemp.Clear();
-				model = name != null ? new Model(name) : null;
+				modelName = name;
 			};
 
-			using (StreamReader reader = new StreamReader(path, Encoding.UTF8))
+			using (StreamReader reader = new StreamReader(file.OpenRead()))
 			{
 				while (!reader.EndOfStream)
 				{
@@ -82,59 +83,57 @@ namespace Erkunden.Client.AssetManagement.Models
 					{
 						// Declare material dependency
 						case "mtllib":
-							provider.LoadAsset(FileUtil.PlatformPath(tokens[1]), FileUtil.GetParentDirectory(path));
+							// ! Materials should automatically be detected !
 							continue;
 						// Declare current face group will use this material by name
 						case "usemtl":
-							if (currPart == null)
-								pushPart("");
-							currPart!.Material = provider.Get<Material>(tokens[1]);
-							continue;
-						// Declare new Object
-						case "o":
-							pushModel(tokens[1]);
-							continue;
-						// Declare new Face Group
-						case "g":
-							if (model == null) pushModel(tokens[1]);
 							pushPart(tokens[1]);
+							partName = tokens[1];
+							material = AssetProvider.Get<Material>(tokens[1]);
+							continue;
+						// Declare new Object or Group
+						case "g":
+						case "o":
+							pushModel(string.Join(' ', tokens, 1, tokens.Length - 1));
 							continue;
 						// Verticies
 						case "v":
-							verts.Add(ModelParser.ParseVector3(tokens.AsSpan(1)));
+							verts.Add(AssetParser.ParseVector3(tokens.AsSpan(1)));
 							continue;
 						// Texture Coordinates
 						case "vt":
-							texcsTemp.Add(ModelParser.ParseVector2(tokens.AsSpan(1)));
+							texcs.Add(AssetParser.ParseVector2(tokens.AsSpan(1)));
 							continue;
 						// Normals
 						case "vn":
-							normsTemp.Add(ModelParser.ParseVector3(tokens.AsSpan(1)));
+							norms.Add(AssetParser.ParseVector3(tokens.AsSpan(1)));
 							continue;
 						case "s":
-							if (model == null) pushModel(tokens[1]);
-							currPart!.Smooth = tokens[1].ToLower().Trim() != "off";
+							//if (model == null) pushModel(tokens[1]);
+							//currPart!.Smooth = tokens[1].ToLower().Trim() != "off";
 							continue;
 						// Polygon Indicies
 						case "f":
-							// f v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3
+							// f v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3 v#/vt#/vn#
 							// Split the indexes
-							indexA = tokens[1].Split('/');
-							indexB = tokens[2].Split('/');
-							indexC = tokens[3].Split('/');
-							// Generate the Vertex Indices
-							var index = new Vector3i(AsIndex(indexA[0]), AsIndex(indexB[0]), AsIndex(indexC[0]));
-							indexes.Add((uint)index.X);
-							indexes.Add((uint)index.Y);
-							indexes.Add((uint)index.Z);
-							// Generate the TexCoords
-							texcs[index.X] = texcsTemp[AsIndex(indexA[1])];
-							texcs[index.Y] = texcsTemp[AsIndex(indexB[1])];
-							texcs[index.Z] = texcsTemp[AsIndex(indexC[1])];
-							// Generate the normals
-							norms[index.X] = normsTemp[AsIndex(indexA[2])];
-							norms[index.Y] = normsTemp[AsIndex(indexB[2])];
-							norms[index.Z] = normsTemp[AsIndex(indexC[2])];
+							int[] vertex;
+							foreach (var token in tokens.AsSpan(1))
+							{
+								count++;
+								vertex = token.Split('/').Select(AsIndex).ToArray();
+								vertexTextureNormals.Add(new VertexTextureNormal(
+									verts[vertex[0]],
+									texcs[vertex[1]],
+									norms[vertex[2]]
+								));
+							};
+							// Determine what kind of primitive is being used
+							switch (tokens.Length - 1)
+							{
+								case 3: primitiveType = PrimitiveType.Triangles; break;
+								case 4: primitiveType = PrimitiveType.Quads; break;
+								default: primitiveType = PrimitiveType.TriangleFan; break;
+							}
 							continue;
 						default: continue;
 					}
@@ -143,5 +142,20 @@ namespace Erkunden.Client.AssetManagement.Models
 			}
 		}
 		private static int AsIndex(string value) => int.Parse(value) - 1;
+
+		public IEnumerable<string> GetNames(FileInfo file)
+		{
+			string? line;
+			using (StreamReader stream = new StreamReader(file.OpenRead()))
+			{
+				while (!stream.EndOfStream)
+				{
+					line = stream.ReadLine()?.Trim();
+					if (line == null) continue;
+					if (!line.StartsWith('o')) continue;
+					yield return AssetParser.ConformName<Model>(line.ReduceSpaces().Substring(line.IndexOf(' ') + 1));
+				}
+			}
+		}
 	}
 }

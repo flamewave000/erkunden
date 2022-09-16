@@ -2,11 +2,20 @@
 
 namespace Erkunden.Client.AssetManagement
 {
-	public abstract class Asset : IDisposable
+	public interface Asset : IDisposable
+	{
+		string Name { get; }
+		bool IsDisposed { get; }
+	}
+
+	public abstract class BaseAsset : Asset
 	{
 		public string Name { get; private set; }
 		public abstract bool IsDisposed { get; }
-		protected Asset(string name) { Name = name; }
+
+		protected BaseAsset(string name) { Name = name; }
+		~BaseAsset() { Dispose(); }
+
 		public abstract void Dispose();
 	}
 }

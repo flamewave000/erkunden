@@ -1,8 +1,7 @@
-﻿using System;
+﻿using System.Runtime.Serialization;
 
 namespace Erkunden.ECS
 {
-	public interface Component
-	{
-	}
+	[DataContract]
+	public abstract class Component { }
 }

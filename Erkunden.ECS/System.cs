@@ -1,10 +1,7 @@
-﻿using System;
-
-namespace Erkunden.ECS
+﻿namespace Erkunden.ECS
 {
-	public interface System
+	public interface System<TData>
 	{
-		public Type Component { get; }
-		public void Process(Entity entity);
+		void Process(Entity entity, TData data);
 	}
 }

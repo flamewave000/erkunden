@@ -7,7 +7,7 @@ namespace Erkunden.Client
 		static void Main(string[] args)
 		{
 			Log.WriteLine("Starting Game");
-			using (Game game = new Game(800, 800, "Erkunden"))
+			using (Game game = new Game())
 			{
 				game.Run();
 			}

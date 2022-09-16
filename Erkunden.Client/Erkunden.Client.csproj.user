@@ -3,4 +3,9 @@
   <PropertyGroup>
     <_LastSelectedProfileId>E:\Projects\erkunden\Erkunden.Client\Properties\PublishProfiles\FolderProfile.pubxml</_LastSelectedProfileId>
   </PropertyGroup>
+  <ItemGroup>
+    <Content Update="Assets\Materials\Basic.mtl">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
 </Project>

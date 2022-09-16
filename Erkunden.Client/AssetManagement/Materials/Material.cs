@@ -1,4 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
+using Erkunden.Client.AssetManagement.Shaders;
 using Erkunden.Client.AssetManagement.Textures;
 using Erkunden.Client.Graphics.Objects;
 using OpenTK.Graphics.OpenGL4;
@@ -6,8 +8,9 @@ using OpenTK.Mathematics;
 
 namespace Erkunden.Client.AssetManagement.Materials
 {
-	public class Material : Asset
+	public struct Material : Asset
 	{
+		public string Name { get; set; }
 		public float Shininess;
 
 		public Color4? AmbientColor;
@@ -23,36 +26,29 @@ namespace Erkunden.Client.AssetManagement.Materials
 		/** <summary>Normal Map</summary> */
 		public Texture? NormalMap;
 
-		public Material(string name) : base(name) { }
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private static void BindColour(Shader shader, string name, Color4? colour)
-		{
-			if (!colour.HasValue) return;
-			shader.SetColor4(name, colour.Value);
-		}
+		private int? ShininessLocation;
 
 		public void Bind(Shader shader)
 		{
+			if (ShininessLocation == null)
+				ShininessLocation = shader.GetUniformLocation("u_Shininess");
 			// Set the colors
-			BindColour(shader, "u_AmbientColor", AmbientColor);
-			BindColour(shader, "u_DiffuseColor", DiffuseColor);
-			BindColour(shader, "u_SpecularColor", SpecularColor);
+			if (AmbientColor.HasValue) shader.SetAmbientColor(AmbientColor.Value);
+			if (DiffuseColor.HasValue) shader.SetDiffuseColor(DiffuseColor.Value);
+			if (SpecularColor.HasValue) shader.SetSpecularColor(SpecularColor.Value);
 			// Bind the textures
-			AmbientMap?.Bind(TextureUnit.Texture0);
-			DiffuseMap?.Bind(TextureUnit.Texture1);
-			SpecularMap?.Bind(TextureUnit.Texture2);
-			NormalMap?.Bind(TextureUnit.Texture3);
-			// Set the sampler2D indices
-			shader.SetInt("u_AmbientTexture", 0);
-			shader.SetInt("u_DiffuseTexture", 1);
-			shader.SetInt("u_SpecularTexture", 2);
-			shader.SetInt("u_NormalTexture", 3);
+			if (AmbientMap != null) shader.SetAmbientTexture(TextureUnit.Texture0, ref AmbientMap);
+			if (DiffuseMap != null) shader.SetDiffuseTexture(TextureUnit.Texture1, ref DiffuseMap);
+			if (SpecularMap != null) shader.SetSpecularTexture(TextureUnit.Texture2, ref SpecularMap);
+			if (NormalMap != null) shader.SetNormalTexture(TextureUnit.Texture3, ref NormalMap);
 			// Set additional fields
-			shader.SetFloat("u_Shininess", Shininess);
+			if (ShininessLocation >= 0)
+				shader.SetFloat("u_Shininess", Shininess);
 		}
 
-		public override void Dispose() { }
-		public override bool IsDisposed => false;
+		public void Dispose() { }
+		public bool IsDisposed => false;
+
+		public static Lazy<Material> BasicMaterial = new Lazy<Material>(() => AssetProvider.Get<Material>("Basic"));
 	}
 }

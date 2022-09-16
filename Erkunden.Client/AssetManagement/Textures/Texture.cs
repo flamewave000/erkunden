@@ -1,42 +1,41 @@
-﻿using Erkunden.Client.Graphics.Objects;
+﻿using System.Runtime.CompilerServices;
+using Erkunden.Client.Graphics.Objects;
 using OpenTK.Graphics.OpenGL4;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 
 namespace Erkunden.Client.AssetManagement.Textures
 {
-	public class Texture : Asset
+	public class Texture : BaseAsset
 	{
-		public Image<Rgba32> Image;
-		public Texture2D Texture2D;
+		public Texture2D Texture2D { get; } = Texture2D.Create();
 		public TextureMinFilter DownscaleTextureFilter = TextureMinFilter.Linear;
 		public TextureMagFilter UpscaleTextureFilter = TextureMagFilter.Linear;
+		public TextureWrapMode TextureWrapS = TextureWrapMode.Repeat;
+		public TextureWrapMode TextureWrapT = TextureWrapMode.Repeat;
 
-		public Texture(string name, Image<Rgba32> image) : base(name)
+		private Texture(string name) : base(name) { }
+
+		public override bool IsDisposed => Texture2D.IsDisposed;
+		public override void Dispose() { Texture2D.Dispose(); }
+
+		public void Bind(TextureUnit textureUnit)
 		{
-			Image = image;
-			Texture2D = Texture2D.Create();
-			byte[] pixels = new byte[4 * Image.Width * Image.Height];
-			Image.CopyPixelDataTo(pixels);
+			GL.ActiveTexture(textureUnit);
 			Texture2D.Bind();
-			Texture2D.SetData(PixelFormat.Rgba, Image.Width, Image.Height, ref pixels);
-		}
-
-		public override bool IsDisposed => Texture2D == null;
-		public override void Dispose()
-		{
-			Image.Dispose();
-			Texture2D.Dispose();
-		}
-
-		public void Bind(TextureUnit texture)
-		{
-			GL.ActiveTexture(texture);
-			Texture2D.Bind();
-			GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-			GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+			GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapS);
+			GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapT);
 			GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)DownscaleTextureFilter);
 			GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)UpscaleTextureFilter);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Texture Create(ImageData image, PixelInternalFormat internalFormat, bool generateMipMaps) =>
+			CopyImageToTexture(new Texture(image.Name), image, internalFormat, generateMipMaps);
+
+		public static Texture CopyImageToTexture(Texture texture, ImageData image, PixelInternalFormat internalFormat, bool generateMipMaps)
+		{
+			texture.Texture2D.Bind();
+			texture.Texture2D.SetData(image.Format, internalFormat, image.Width, image.Height, generateMipMaps, ref image.Pixels);
+			return texture;
 		}
 	}
 }
