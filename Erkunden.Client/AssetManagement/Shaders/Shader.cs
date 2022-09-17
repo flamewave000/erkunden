@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Erkunden.Client.AssetManagement.Textures;
 using Erkunden.Client.Graphics.Data;
 using Erkunden.Client.Graphics.Objects;
@@ -9,7 +10,9 @@ namespace Erkunden.Client.AssetManagement.Shaders
 {
 	public class Shader : BaseAsset
 	{
-		public readonly ShaderProgram Program = new ShaderProgram();
+		private Dictionary<string, int> locations = new Dictionary<string, int>();
+
+		public readonly ShaderProgram Program;
 		public ShaderConfig Config;
 		public ShaderScript[] Scripts;
 
@@ -34,6 +37,7 @@ namespace Erkunden.Client.AssetManagement.Shaders
 
 		public Shader(string name, ShaderScript[] scripts, ShaderConfig config) : base(name)
 		{
+			Program = new ShaderProgram(scripts);
 			Scripts = scripts;
 			Config = config;
 		}
@@ -65,7 +69,7 @@ namespace Erkunden.Client.AssetManagement.Shaders
 
 		public void Compile()
 		{
-			Program.Build(Scripts);
+			Program.Build();
 			Program.Bind();
 
 			AttributeVertex = GetAttribLocation(Config.AttributeVertex);
@@ -104,7 +108,12 @@ namespace Erkunden.Client.AssetManagement.Shaders
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int GetAttribLocation(string attribName) => GL.GetAttribLocation(Program.Handle, attribName);
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int GetUniformLocation(string uniformName) => GL.GetUniformLocation(Program.Handle, uniformName);
+		public int GetUniformLocation(string uniformName)
+		{
+			if (!locations.TryGetValue(uniformName, out var location))
+				location = locations[uniformName] = GL.GetUniformLocation(Program.Handle, uniformName);
+			return location;
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SetModel(ref Matrix4 value) => GL.UniformMatrix4(MatrixModel, true, ref value);

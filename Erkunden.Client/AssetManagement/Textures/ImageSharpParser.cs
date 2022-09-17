@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Erkunden.Core.Util;
-using OpenTK.Compute.OpenCL;
 using OpenTK.Graphics.OpenGL4;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.ColorSpaces;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
@@ -26,7 +25,7 @@ namespace Erkunden.Client.AssetManagement.Textures
 			ImageData imageData = LoadImage(file);
 			store.Add(
 				AssetParser.ConformName<Texture>(imageData.Name),
-				Texture.Create(imageData, (PixelInternalFormat)imageData.Format, false)
+				Texture.Create(imageData, false)
 			);
 			Log.WriteLine("@green;Loaded Texture:@magenta;  " + imageData.Name, indent: true);
 		}
@@ -71,14 +70,17 @@ namespace Erkunden.Client.AssetManagement.Textures
 				{
 					case 8:
 						imageData.Format = PixelFormat.Red;
-						GetImagePixelData<A8>(stream, ref imageData);
+						imageData.InternalFormat = PixelInternalFormat.R8;
+						GetImagePixelData<L8>(stream, ref imageData);
 						break;
 					case 24:
 						imageData.Format = PixelFormat.Rgb;
+						imageData.InternalFormat = PixelInternalFormat.Rgb;
 						GetImagePixelData<Rgb24>(stream, ref imageData);
 						break;
 					case 32:
 						imageData.Format = PixelFormat.Rgba;
+						imageData.InternalFormat = PixelInternalFormat.Rgba;
 						GetImagePixelData<Rgba32>(stream, ref imageData);
 						break;
 					default: throw new UnsupportedPixelSizeException();

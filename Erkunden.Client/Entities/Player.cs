@@ -1,6 +1,8 @@
 ﻿using System;
+using Erkunden.Client.AssetManagement;
 using Erkunden.Client.AssetManagement.Models;
 using Erkunden.Client.AssetManagement.Shaders;
+using Erkunden.Client.AssetManagement.Textures;
 using Erkunden.Client.Entities.Cameras;
 using Erkunden.Client.Entities.Scenes;
 using Erkunden.Client.Graphics.Data;
@@ -14,6 +16,7 @@ namespace Erkunden.Client.Entities
 {
 	public class Player : ClientGameObject
 	{
+		private int fontSize = 47;
 		private int currentZoomLevel = 3;
 		private float[] zoomLevels = new float[]
 		{
@@ -23,6 +26,7 @@ namespace Erkunden.Client.Entities
 		public Momentum Momentum { get; private set; } = null!;
 		public ThirdPersonCamera Camera = null!;
 		public Model Ship = null!;
+		public Texture smile = null!;
 
 		public float Acceleration = 100;
 		public float Speed => Momentum.Linear.LengthFast;
@@ -43,6 +47,7 @@ namespace Erkunden.Client.Entities
 
 			GetParent<Scene>().CurrentCamera = Camera;
 
+			smile = AssetProvider.Get<Texture>("Arial48_0");
 
 			Momentum = Add<Momentum>();
 			Momentum.LinearDrag = Acceleration / 2;
@@ -81,6 +86,11 @@ namespace Erkunden.Client.Entities
 			if (InputManager.Keyboard.IsKeyPressed(Keys.D3))
 				Level = RenderLevel.WireFrame;
 
+			if (InputManager.Keyboard.IsKeyPressed(Keys.KeyPadAdd))
+				fontSize++;
+			if (InputManager.Keyboard.IsKeyPressed(Keys.KeyPadSubtract))
+				fontSize--;
+
 			if (InputManager.Keyboard.IsKeyReleased(Keys.Space))
 			{
 				Transform.Position = Vector3.Zero;
@@ -102,7 +112,7 @@ namespace Erkunden.Client.Entities
 			base.OnDraw(shader, gameTime);
 			Ship.Draw(shader);
 
-			//SpriteFont.DrawText("Arial", 24, new Vector2(20, 20), "Hello World", Color4.Red);
+			SpriteFont.DrawText("Arial", fontSize, new Vector2(20, 20), fontSize.ToString(), Color4.Red);
 		}
 	}
 }

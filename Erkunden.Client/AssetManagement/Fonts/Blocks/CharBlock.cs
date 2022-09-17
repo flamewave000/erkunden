@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 using OpenTK.Mathematics;
 
 namespace Erkunden.Client.AssetManagement.Fonts.Blocks
@@ -26,11 +27,14 @@ namespace Erkunden.Client.AssetManagement.Fonts.Blocks
 		public byte Page;
 		[FieldOffset(19)]
 		public byte Chnl;
+
+		public override string ToString() => $"Ch: {Convert.ToChar(Id)}, Pg: {Page}";
 		public static readonly int ByteSize = Marshal.SizeOf<CharBlock>();
 	}
 
 	public struct ScaledCharBlock
 	{
+		public char Id;
 		public Vector2 GlyphOffset;
 		public Vector2 GlyphSize;
 		public Vector2 DrawSize;
@@ -38,5 +42,6 @@ namespace Erkunden.Client.AssetManagement.Fonts.Blocks
 		public float XAdvance;
 		public int Page;
 		public int Chnl;
+		public override string ToString() => $"Ch: {Id}, Pg: {Page}";
 	}
 }

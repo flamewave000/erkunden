@@ -44,6 +44,7 @@ namespace Erkunden.Client.AssetManagement.Fonts.Blocks
 		[FieldOffset(13)]
 		public byte Outline;
 
+		public override string ToString() => $"FontSize: {FontSize}";
 		public static readonly int ByteSize = Marshal.SizeOf<InfoBlock>();
 	}
 }

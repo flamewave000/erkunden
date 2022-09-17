@@ -55,7 +55,7 @@ namespace Erkunden.Client.AssetManagement.Fonts
 				// Read the Page Block header
 				ParseStruct(reader, out block, BlockHeader.ByteSize);
 				// Determine the Uniform size of the Page names
-				int pageLength = CString.Length(reader);
+				int pageLength = CString.Length(reader, true);
 				// Calculate the number of pages (Rarely more than 1)
 				int pageCount = block.Size / pageLength;
 				// Initialize the pages array to the number of pages

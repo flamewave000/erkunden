@@ -18,6 +18,8 @@ namespace Erkunden.Client.AssetManagement.Fonts.Blocks
 		public BlockType Type;
 		[FieldOffset(1)]
 		public int Size;
+
+		public override string ToString() => $"{Type}, {Size}";
 		public static readonly int ByteSize = Marshal.SizeOf<BlockHeader>();
 	}
 }

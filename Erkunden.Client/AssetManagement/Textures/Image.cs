@@ -9,5 +9,6 @@ namespace Erkunden.Client.AssetManagement.Textures
 		public int Height;
 		public byte[] Pixels;
 		public PixelFormat Format;
+		public PixelInternalFormat InternalFormat;
 	}
 }

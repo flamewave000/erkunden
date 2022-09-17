@@ -41,9 +41,9 @@ namespace Erkunden.Client.AssetManagement.Fonts
 			}
 		}
 
-		public void DrawText(Vector2 position, string text, int fontSize, int wrapAt = 0)
+		public void DrawText(Vector2 position, string text, int fontSize, Color4 color, int wrapAt = 0)
 		{
-			float scale = fontSize / Meta.Info.FontSize;
+			float scale = fontSize / (float)Meta.Info.FontSize;
 			float lineHeight = Body.Common.LineHeight * scale;
 			var chars = GetScaledChars(fontSize, scale);
 
@@ -64,35 +64,33 @@ namespace Erkunden.Client.AssetManagement.Fonts
 					continue;
 				}
 				// Otherwise fetch the regular Glyph
-				else block = chars[text[c]];
+				else block = chars[characters[text[c]]];
 
 				// Retrieve any kerning rule for the current glyph pair
 				kern = (c > 0 ? CalcKerning(text[c], text[c - 1]) : 0) * scale;
 
 				// Draw the glyph at the calculated position
-				DrawGlyph(position, block);
+				DrawGlyph(position, block, color);
 
 				// After drawing glyph, Push forward to next character
-				position.X = kern + block.XAdvance;
+				position.X += kern + block.XAdvance;
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void DrawGlyph(Vector2 position, ScaledCharBlock glyph)
+		private void DrawGlyph(Vector2 position, ScaledCharBlock glyph, Color4 color)
 		{
 			SpriteBatch.QueueSprite(
 				texture: Pages[glyph.Page],
-				screenLocation: new Box2
-				{
-					Min = position + glyph.DrawOffset,
-					Max = position + glyph.DrawOffset + glyph.DrawSize
-				},
-				spriteLocation: new Box2
-				{
-					Min = glyph.GlyphOffset,
-					Max = glyph.GlyphOffset + glyph.GlyphSize
-				}, false, false
-			);
+				tint: color,
+				rotation: 0,
+				rotationOrigin: Vector2.Zero,
+				position: position + glyph.DrawOffset,
+				size: glyph.DrawSize,
+				textureOffset: glyph.GlyphOffset,
+				textureSize: glyph.GlyphSize,
+				transpose: false,
+				transformSpriteTexCoord: false);
 		}
 
 		public ScaledCharBlock[] GetScaledChars(int fontSize, float scale)
@@ -102,7 +100,7 @@ namespace Erkunden.Client.AssetManagement.Fonts
 			Vector2[] scales = new Vector2[Pages.Length];
 			for (int c = 0; c < Pages.Length; c++)
 			{
-				scales[c] = new Vector2(1 / Pages[c].Texture2D.Width, 1 / Pages[c].Texture2D.Height);
+				scales[c] = new Vector2(1f / Pages[c].Texture2D.Width, 1f / Pages[c].Texture2D.Height);
 			}
 
 			chars = new ScaledCharBlock[Body.Chars.Length];
@@ -110,6 +108,7 @@ namespace Erkunden.Client.AssetManagement.Fonts
 			{
 				chars[c] = new ScaledCharBlock
 				{
+					Id = (char)(Body.Chars[c].Id),
 					// Create a vector for glyph location and scale it to texture coordinates (0,1)
 					GlyphOffset = new Vector2(Body.Chars[c].X, Body.Chars[c].Y) * scales[Body.Chars[c].Page],
 					GlyphSize = new Vector2(Body.Chars[c].Width, Body.Chars[c].Height) * scales[Body.Chars[c].Page],
@@ -123,7 +122,11 @@ namespace Erkunden.Client.AssetManagement.Fonts
 					Page = Body.Chars[c].Page,
 					Chnl = Body.Chars[c].Chnl
 				};
+				// Invert the GlyphOffset.Y and GlyphSize.Y to bring it from screen coord to texture coord
+				chars[c].GlyphOffset.Y = (1f - chars[c].GlyphOffset.Y) - chars[c].GlyphSize.Y;
 			}
+
+			sizeCache[fontSize] = chars;
 			return chars;
 		}
 

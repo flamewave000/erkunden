@@ -39,6 +39,8 @@ namespace Erkunden.Client.AssetManagement.Fonts.Blocks
 		public byte GreenChnl;
 		[FieldOffset(14)]
 		public byte BlueChnl;
+
+		public override string ToString() => $"Lh: {LineHeight}, Pgs: {Pages}";
 		public static readonly int ByteSize = Marshal.SizeOf<CommonBlock>();
 	}
 }

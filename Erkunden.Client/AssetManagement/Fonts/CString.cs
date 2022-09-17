@@ -35,13 +35,13 @@ namespace Erkunden.Client.AssetManagement.Fonts
 			return count;
 		}
 
-		public static int Length(BinaryReader binary)
+		public static int Length(BinaryReader binary, bool includeTerminal = false)
 		{
 			long position = binary.BaseStream.Position;
 			int count = 0;
 			while (binary.ReadByte() != 0) count++;
 			binary.BaseStream.Position = position;
-			return count;
+			return includeTerminal ? 1 + count : count;
 		}
 	}
 }

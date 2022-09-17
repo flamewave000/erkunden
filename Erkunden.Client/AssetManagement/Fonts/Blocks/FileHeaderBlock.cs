@@ -15,13 +15,15 @@ namespace Erkunden.Client.AssetManagement.Fonts.Blocks
 	{
 		[FieldOffset(0)]
 		private byte ID0;
-		[FieldOffset(0)]
+		[FieldOffset(1)]
 		private byte ID1;
-		[FieldOffset(0)]
+		[FieldOffset(2)]
 		private byte ID2;
 		[FieldOffset(3)]
 		public VersionCode Version;
 		public string Identifier => Encoding.ASCII.GetString(new byte[] { ID0, ID1, ID2 });
+
+		public override string ToString() => $"{Identifier}:{Version}";
 		public static readonly int ByteSize = Marshal.SizeOf<FileHeaderBlock>();
 	}
 }

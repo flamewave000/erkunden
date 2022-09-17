@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
 namespace Erkunden.Client.AssetManagement.Fonts.Blocks
 {
@@ -11,6 +12,8 @@ namespace Erkunden.Client.AssetManagement.Fonts.Blocks
 		public uint Second;
 		[FieldOffset(8)]
 		public short Amount;
+
+		public override string ToString() => $"{Convert.ToChar(First)}:{Convert.ToChar(Second)} -> {Amount}";
 		public static readonly int ByteSize = Marshal.SizeOf<KerningBlock>();
 	}
 }

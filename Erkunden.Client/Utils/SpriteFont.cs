@@ -44,7 +44,7 @@ namespace Erkunden.Client.Utils
 				if (LoadFont(fontName)) font = Fonts[fontName];
 				else throw new FontNotFoundException();
 			}
-			font.DrawText(position, text, fontSize, wrapAt);
+			font.DrawText(position, text, fontSize, color, wrapAt);
 		}
 	}
 }

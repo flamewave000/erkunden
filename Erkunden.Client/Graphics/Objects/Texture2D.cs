@@ -1,11 +1,14 @@
 ﻿using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 
 namespace Erkunden.Client.Graphics.Objects
 {
 	public class Texture2D : GraphicsObject
 	{
+		public PixelInternalFormat Format { get; private set; } = PixelInternalFormat.Rgba;
 		public int Width { get; private set; } = 0;
 		public int Height { get; private set; } = 0;
+		public Vector2 Size { get; private set; } = Vector2.Zero;
 
 		private Texture2D(int handle)
 		{
@@ -20,6 +23,8 @@ namespace Erkunden.Client.Graphics.Objects
 		{
 			Width = width;
 			Height = height;
+			Size = new Vector2(width, height);
+			Format = internalFormat;
 			GL.TexImage2D(
 				target: TextureTarget.Texture2D,
 				level: 0, // For reducing the max number of MipMaps, 0 allows OpenGL to figure it out

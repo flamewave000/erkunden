@@ -28,13 +28,13 @@ namespace Erkunden.Client.AssetManagement.Textures
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Texture Create(ImageData image, PixelInternalFormat internalFormat, bool generateMipMaps) =>
-			CopyImageToTexture(new Texture(image.Name), image, internalFormat, generateMipMaps);
+		public static Texture Create(ImageData image, bool generateMipMaps) =>
+			CopyImageToTexture(new Texture(image.Name), image, generateMipMaps);
 
-		public static Texture CopyImageToTexture(Texture texture, ImageData image, PixelInternalFormat internalFormat, bool generateMipMaps)
+		public static Texture CopyImageToTexture(Texture texture, ImageData image, bool generateMipMaps)
 		{
 			texture.Texture2D.Bind();
-			texture.Texture2D.SetData(image.Format, internalFormat, image.Width, image.Height, generateMipMaps, ref image.Pixels);
+			texture.Texture2D.SetData(image.Format, image.InternalFormat, image.Width, image.Height, generateMipMaps, ref image.Pixels);
 			return texture;
 		}
 	}

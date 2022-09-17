@@ -68,7 +68,7 @@ namespace Erkunden.Client
 			Layers[RenderLevel.Default] = AssetProvider.Get<Shader>("Default");
 			Layers[RenderLevel.WireFrame] = AssetProvider.Get<Shader>("WireFrame");
 
-			SpriteBatch.Initialize();
+			SpriteBatch.Initialize(this);
 
 			Scenes.Add(EntityFactory.Create<SpaceScene>(this));
 
@@ -151,7 +151,7 @@ namespace Erkunden.Client
 				}
 			}
 
-			SpriteBatch.DrawBatchedSprites();
+			SpriteBatch.DrawBatchedSprites(ClientSize);
 
 			Context.SwapBuffers();
 			base.OnRenderFrame(args);

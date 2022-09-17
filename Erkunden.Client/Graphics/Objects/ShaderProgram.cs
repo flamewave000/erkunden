@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Erkunden.Core.Util;
 using OpenTK.Graphics.OpenGL4;
 
@@ -7,20 +6,27 @@ namespace Erkunden.Client.Graphics.Objects
 {
 	public class ShaderProgram : GraphicsObject, IDisposable
 	{
+		public readonly ShaderScript[] Scripts;
 		public string? LastError { get; private set; } = null;
 
-		public void Build(IEnumerable<ShaderScript> shaders)
+		public ShaderProgram(ShaderScript[] scripts)
+		{
+			Scripts = scripts;
+		}
+
+		public void Build()
 		{
 			if (!IsDisposed) return;
+
 			Handle = GL.CreateProgram();
 
 			Log.WriteLine($"@blue;Created Shader Program: @Magenta;{Handle}");
 			Log.WriteLine($"@yellow;Compiling Shader Program @Magenta;{Handle}");
 			Log.Indent();
-			foreach (var shader in shaders)
+			foreach (var script in Scripts)
 			{
-				shader.Bind();
-				GL.AttachShader(Handle, shader.Handle);
+				script.Bind();
+				GL.AttachShader(Handle, script.Handle);
 			}
 
 			GL.LinkProgram(Handle);
@@ -34,12 +40,6 @@ namespace Erkunden.Client.Graphics.Objects
 			else
 				Log.WriteLine($"@yellow;Linked Program @Magenta;{Handle}");
 
-			foreach (var shader in shaders)
-			{
-				GL.DetachShader(Handle, shader.Handle);
-				shader.Dispose();
-			}
-
 			Log.Dedent();
 		}
 
@@ -50,6 +50,11 @@ namespace Erkunden.Client.Graphics.Objects
 		public override void Dispose()
 		{
 			if (IsDisposed) return;
+			foreach (var shader in Scripts)
+			{
+				GL.DetachShader(Handle, shader.Handle);
+				shader.Dispose();
+			}
 			GL.DeleteProgram(Handle);
 			Handle = 0;
 		}
