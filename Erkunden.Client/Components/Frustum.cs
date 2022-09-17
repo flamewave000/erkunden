@@ -10,7 +10,7 @@ namespace Erkunden.Client.Components
 		Perspective = 1
 	}
 
-	public class Frustum : ECS.Component
+	public class Frustum : ECS.IComponent
 	{
 		public Matrix4 Projection = Matrix4.Identity;
 		public ProjectionType Type = ProjectionType.Perspective;

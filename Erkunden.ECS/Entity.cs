@@ -10,7 +10,7 @@ namespace Erkunden.ECS
 		#region Fields
 		private bool UnSafe = true;
 		private Dictionary<EntityID, Entity> _children = new Dictionary<EntityID, Entity>();
-		private KeyedByTypeCollection<Component> _components = new KeyedByTypeCollection<Component>();
+		private KeyedByTypeCollection<IComponent> _components = new KeyedByTypeCollection<IComponent>();
 
 		public EntityID ID { get; internal set; }
 		public EntityID? ParentID { get; private set; }
@@ -18,7 +18,7 @@ namespace Erkunden.ECS
 
 		#region Properties
 		public bool IsDestroyed => ID == 0UL;
-		public IEnumerable<Component> Components => _components;
+		public IEnumerable<IComponent> Components => _components;
 
 		public int ChildCount => _children.Count;
 		public readonly EntityCollection Children;
@@ -48,7 +48,7 @@ namespace Erkunden.ECS
 		protected virtual void OnDestroy() { }
 
 		#region Component Operators
-		public T Add<T>() where T : Component, new()
+		public T Add<T>() where T : class, IComponent, new()
 		{
 			if (UnSafe) throw new InvalidOperationException("Components must be added in the Setup() call");
 			if (_components.Contains(typeof(T)))
@@ -57,23 +57,23 @@ namespace Erkunden.ECS
 			_components.Add(element);
 			return element;
 		}
-		public void Add<T>(out T outVal) where T : Component, new()
+		public void Add<T>(out T outVal) where T : IComponent, new()
 		{
 			if (UnSafe) throw new InvalidOperationException("Components must be added in the Setup() call");
-			Component component;
+			IComponent component;
 			if (!_components.TryGetValue(typeof(T), out component))
 				component = new T();
 			outVal = (T)component;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public T? Get<T>() where T : Component => Get<T>(typeof(T));
+		public T? Get<T>() where T : class, IComponent => Get<T>(typeof(T));
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public T? Get<T>(Type type) where T : Component => _components.TryGetValue(type, out var value) ? (T?)value : null;
-		public bool TryGet(Type type, out Component value) => _components.TryGetValue(type, out value);
+		public T? Get<T>(Type type) where T : class, IComponent => _components.TryGetValue(type, out var value) ? (T?)value : null;
+		public bool TryGet(Type type, out IComponent value) => _components.TryGetValue(type, out value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Has<T>() where T : Component => Has(typeof(T));
+		public bool Has<T>() where T : IComponent => Has(typeof(T));
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Has(Type type) => _components.Contains(type);
 		public bool Has(Type[] types)

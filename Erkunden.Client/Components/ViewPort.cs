@@ -6,7 +6,7 @@ using OpenTK.Mathematics;
 namespace Erkunden.Client.Components
 {
 	[DataContract]
-	public class ViewPort : Component
+	public class ViewPort : IComponent
 	{
 		public enum ViewType
 		{

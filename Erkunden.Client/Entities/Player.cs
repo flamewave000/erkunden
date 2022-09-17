@@ -14,6 +14,19 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Erkunden.Client.Entities
 {
+	public class MyCam : ECS.IComponent, ICamera
+	{
+		public Vector3 UpVec { get; }
+		public Vector3 Position { get; }
+		public Matrix4 ViewMatrix { get; }
+
+		public void BindView(Shader shader)
+		{
+			throw new NotImplementedException();
+		}
+	}
+
+
 	public class Player : ClientGameObject
 	{
 		private int fontSize = 47;
@@ -24,7 +37,7 @@ namespace Erkunden.Client.Entities
 		};
 
 		public Momentum Momentum { get; private set; } = null!;
-		public ThirdPersonCamera Camera = null!;
+		public ICamera Camera = null!;
 		public Model Ship = null!;
 		public Texture smile = null!;
 
@@ -39,11 +52,11 @@ namespace Erkunden.Client.Entities
 
 			Ship = AssetManagement.AssetProvider.Get<Model>("Fighter_Ship");
 
-			Camera = Add<ThirdPersonCamera>();
-			Camera.Target = Transform;
-			Camera.LookAtOffset = new Vector3(0, 0, 0);
-			Camera.RelativePosition = ThirdPersonCamera.RelativePositionFromRadiusRotation(80f,
-				Quaternion.FromEulerAngles(MathHelper.DegreesToRadians(-15), 0, 0));
+			Camera = Add<MyCam>();
+			//Camera.Target = Transform;
+			//Camera.LookAtOffset = new Vector3(0, 0, 0);
+			//Camera.RelativePosition = ThirdPersonCamera.RelativePositionFromRadiusRotation(80f,
+			//	Quaternion.FromEulerAngles(MathHelper.DegreesToRadians(-15), 0, 0));
 
 			GetParent<Scene>().CurrentCamera = Camera;
 

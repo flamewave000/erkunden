@@ -11,7 +11,7 @@ namespace Erkunden.Client.Entities.Cameras
 		void BindView(Shader shader);
 	}
 
-	public abstract class Camera : ECS.Component, ICamera
+	public abstract class Camera : ECS.IComponent, ICamera
 	{
 		protected Matrix4 viewMat4;
 		protected Vector3 upVec = Vector3.UnitY;

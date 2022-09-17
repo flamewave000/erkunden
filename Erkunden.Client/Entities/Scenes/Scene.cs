@@ -9,8 +9,8 @@ namespace Erkunden.Client.Entities.Scenes
 	public class Scene : ClientGameObject
 	{
 		protected DirectionCamera DefaultCamera = null!;
-		public Camera CurrentOrDefaultCamera => CurrentCamera ?? DefaultCamera;
-		public Camera? CurrentCamera { get; set; } = null;
+		public ICamera CurrentOrDefaultCamera => CurrentCamera ?? DefaultCamera;
+		public ICamera? CurrentCamera { get; set; } = null;
 		public ViewPort ViewPort { get; private set; } = null!;
 		public Frustum Frustum { get; private set; } = null!;
 		public Game Game;
