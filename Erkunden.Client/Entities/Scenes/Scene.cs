@@ -46,7 +46,7 @@ namespace Erkunden.Client.Entities.Scenes
 
 			// Initialize Projection Frustum
 			Frustum = Add<Frustum>();
-			Frustum.ConfigurePerspective(0.1f, 1000f, 60f);
+			Frustum.ConfigurePerspective(0.1f, 100_000f, 60f);
 		}
 
 		public virtual void OnResize(ResizeEventArgs eventArgs)

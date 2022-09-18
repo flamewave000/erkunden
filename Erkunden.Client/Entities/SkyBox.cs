@@ -51,7 +51,7 @@ namespace Erkunden.Client.Entities
 		{
 			base.OnPreDraw(shader, gameTime);
 			Transform.Position = GetParent<Scene>().CurrentOrDefaultCamera.Position;
-			Transform.GenerateMatrix();
+			Transform.UpdateMatrix();
 		}
 
 		public override void OnDraw(Shader shader, in GameTime gameTime)

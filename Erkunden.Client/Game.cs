@@ -24,8 +24,8 @@ namespace Erkunden.Client
 {
 	public class Game : GameWindow
 	{
-		GameTime updateTime = new GameTime { ellapsed = 0, total = 0 };
-		GameTime renderTime = new GameTime { ellapsed = 0, total = 0 };
+		GameTime updateTime = new GameTime { ellapsed = 0, total = 0, ellapsedLong = 0, totalLong = 0 };
+		GameTime renderTime = new GameTime { ellapsed = 0, total = 0, ellapsedLong = 0, totalLong = 0 };
 
 		PhysicsSystem PhysicsSystem = new PhysicsSystem();
 
@@ -96,7 +96,7 @@ namespace Erkunden.Client
 		#region Game Loop
 		protected override void OnUpdateFrame(FrameEventArgs args)
 		{
-			RefreshTime(args, ref updateTime);
+			updateTime.Update(args.Time);
 
 			var gameObjects = EntityFactory.Entities.FilterAsType<ClientGameObject>();
 			// Perform Pre-Update
@@ -118,7 +118,7 @@ namespace Erkunden.Client
 		}
 		protected override void OnRenderFrame(FrameEventArgs args)
 		{
-			RefreshTime(args, ref renderTime);
+			renderTime.Update(args.Time);
 
 			GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
@@ -158,12 +158,6 @@ namespace Erkunden.Client
 		}
 		#endregion
 
-
-		private void RefreshTime(in FrameEventArgs args, ref GameTime gameTime)
-		{
-			gameTime.total += args.Time;
-			gameTime.ellapsed = args.Time;
-		}
 		private void DebugMessageHandler(DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
 		{
 			switch (severity)

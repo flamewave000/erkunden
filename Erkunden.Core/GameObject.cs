@@ -11,6 +11,6 @@ namespace Erkunden.Core
 		protected override void OnSetup() { }
 		public virtual void OnPreUpdate(in GameTime gameTime) { }
 		public virtual void OnUpdate(in GameTime gameTime) { }
-		public virtual void OnPostUpdate(in GameTime gameTime) { Transform.GenerateMatrix(); }
+		public virtual void OnPostUpdate(in GameTime gameTime) { Transform.UpdateMatrix(); }
 	}
 }

@@ -6,12 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Erkunden.ECS\Erkunden.ECS.csproj" />
+    <PackageReference Include="OpenTK.Mathematics" Version="4.7.5" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MoonSharp" Version="2.0.0" />
-    <PackageReference Include="System.ServiceModel.Primitives" Version="4.10.0" />
+    <ProjectReference Include="..\Erkunden.ECS\Erkunden.ECS.csproj" />
   </ItemGroup>
 
 </Project>

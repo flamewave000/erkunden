@@ -1,8 +1,7 @@
 ﻿using System;
-using Erkunden.Client.AssetManagement;
 using Erkunden.Client.AssetManagement.Models;
 using Erkunden.Client.AssetManagement.Shaders;
-using Erkunden.Client.AssetManagement.Textures;
+using Erkunden.Client.Components;
 using Erkunden.Client.Entities.Cameras;
 using Erkunden.Client.Entities.Scenes;
 using Erkunden.Client.Graphics.Data;
@@ -14,118 +13,98 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Erkunden.Client.Entities
 {
-	public class MyCam : ECS.IComponent, ICamera
-	{
-		public Vector3 UpVec { get; }
-		public Vector3 Position { get; }
-		public Matrix4 ViewMatrix { get; }
-
-		public void BindView(Shader shader)
-		{
-			throw new NotImplementedException();
-		}
-	}
-
-
 	public class Player : ClientGameObject
 	{
-		private int fontSize = 47;
+		public Momentum Momentum { get; private set; } = null!;
+		public ThirdPersonCamera Camera = null!;
+		public Controller Controller = null!;
+		public Model Ship = null!;
+
 		private int currentZoomLevel = 3;
 		private float[] zoomLevels = new float[]
 		{
 			0.25f, 0.5f, 0.75f, 1.0f, 2.0f, 4.0f, 8.0f
 		};
 
-		public Momentum Momentum { get; private set; } = null!;
-		public ICamera Camera = null!;
-		public Model Ship = null!;
-		public Texture smile = null!;
-
 		public float Acceleration = 100;
+
+		public Vector2 TiltDirection = Vector2.Zero;
+		public Vector2 TiltDirectionLerp = Vector2.Zero;
+
 		public float Speed => Momentum.Linear.LengthFast;
 
 		protected override void OnSetup()
 		{
 			base.OnSetup();
-
+			Camera = Add<ThirdPersonCamera>();
+			Camera.Target = Transform;
+			Controller = Add<Controller>();
 			Transform.Scale *= 100f;
-
 			Ship = AssetManagement.AssetProvider.Get<Model>("Fighter_Ship");
-
-			Camera = Add<MyCam>();
-			//Camera.Target = Transform;
-			//Camera.LookAtOffset = new Vector3(0, 0, 0);
-			//Camera.RelativePosition = ThirdPersonCamera.RelativePositionFromRadiusRotation(80f,
-			//	Quaternion.FromEulerAngles(MathHelper.DegreesToRadians(-15), 0, 0));
-
-			GetParent<Scene>().CurrentCamera = Camera;
-
-			smile = AssetProvider.Get<Texture>("Arial48_0");
-
 			Momentum = Add<Momentum>();
 			Momentum.LinearDrag = Acceleration / 2;
+			Momentum.AngularDrag = MathHelper.DegreesToRadians(30) / 2;
+			GetParent<Scene>().CurrentCamera = Camera;
+			Camera.RelativePosition = ThirdPersonCamera.RelativePositionFromRadiusRotation(80f,
+				Quaternion.FromEulerAngles(MathHelper.DegreesToRadians(-15), 0, 0));
 		}
 
 		public override void OnUpdate(in GameTime gameTime)
 		{
 			base.OnUpdate(gameTime);
-			Vector3 velocity = Vector3.Zero;
-			Vector3 angular = Vector3.Zero;
-			Vector3 forward = Vector4.Transform(-Vector4.UnitZ, Transform.Rotation).Xyz;
-			Vector3 right = Vector4.Transform(Vector4.UnitX, Transform.Rotation).Xyz;
+			HandleInput();
 
-			if (InputManager.Keyboard.IsKeyDown(Keys.W))
-				velocity += forward;
-			if (InputManager.Keyboard.IsKeyDown(Keys.S))
-				velocity -= forward;
-			if (InputManager.Keyboard.IsKeyDown(Keys.D))
-				velocity += right;
-			if (InputManager.Keyboard.IsKeyDown(Keys.A))
-				velocity -= right;
+			var deltaRot = -Controller.GetRotation();
+			var deltaPos = Vector3.Transform(Controller.GetMovement(), Transform.Rotation);
 
-			if (InputManager.Keyboard.IsKeyDown(Keys.Up))
-				angular -= Vector3.UnitX;
-			if (InputManager.Keyboard.IsKeyDown(Keys.Down))
-				angular += Vector3.UnitX;
-			if (InputManager.Keyboard.IsKeyDown(Keys.Left))
-				angular += Vector3.UnitY;
-			if (InputManager.Keyboard.IsKeyDown(Keys.Right))
-				angular -= Vector3.UnitY;
+			TiltDirection = deltaPos.Zx;
 
-			if (InputManager.Keyboard.IsKeyPressed(Keys.D1))
-				Level = RenderLevel.Default;
-			if (InputManager.Keyboard.IsKeyPressed(Keys.D2))
-				Level = RenderLevel.Default | RenderLevel.WireFrame;
-			if (InputManager.Keyboard.IsKeyPressed(Keys.D3))
-				Level = RenderLevel.WireFrame;
+			TiltDirectionLerp += (TiltDirection - TiltDirectionLerp) * 0.25f;
 
-			if (InputManager.Keyboard.IsKeyPressed(Keys.KeyPadAdd))
-				fontSize++;
-			if (InputManager.Keyboard.IsKeyPressed(Keys.KeyPadSubtract))
-				fontSize--;
+			Momentum.LinearAccel = deltaPos * Acceleration;
+			Momentum.AngularAccel = deltaRot * MathHelper.DegreesToRadians(30);
+		}
 
-			if (InputManager.Keyboard.IsKeyReleased(Keys.Space))
-			{
-				Transform.Position = Vector3.Zero;
-				Transform.Rotation = Quaternion.Identity;
-			}
-			if (InputManager.Keyboard.IsKeyDown(Keys.Escape))
-				GetParent<Scene>().Game.Close();
-
-			currentZoomLevel = Math.Clamp(currentZoomLevel + (int)InputManager.Mouse.ScrollDelta.Y, 0, zoomLevels.Length - 1);
-			Camera.Zoom = zoomLevels[currentZoomLevel];
-
-			velocity.NormalizeFast();
-			Momentum.Linear += velocity * Acceleration * (float)gameTime.ellapsed;
-			Momentum.Angular = angular * MathHelper.DegreesToRadians(10) * (float)Math.PI;
+		public override void OnPostUpdate(in GameTime gameTime)
+		{
+			var velocity = new Vector3(TiltDirectionLerp.X, 0, -TiltDirectionLerp.Y);
+			Transform.Tilt = Quaternion.FromEulerAngles(velocity * MathHelper.DegreesToRadians(5f));
+			base.OnPostUpdate(gameTime);
 		}
 
 		public override void OnDraw(Shader shader, in GameTime gameTime)
 		{
 			base.OnDraw(shader, gameTime);
 			Ship.Draw(shader);
+			SpriteFont.DrawText("Consolas", 20, new Vector2(20, 0), @$"
+        Position: {Round(Transform.Position)}
+        Rotation: {Round(Transform.Rotation.ToEulerAngles())}
+           Scale: {Round(Transform.Scale)}
+ Linear Velocity: {Round(Momentum.Linear)}
+Angular Velocity: {Round(Momentum.Angular)}
+", Color4.White);
+		}
 
-			SpriteFont.DrawText("Arial", fontSize, new Vector2(20, 20), fontSize.ToString(), Color4.Red);
+		private Vector3 Round(Vector3 vec) => new Vector3((float)Math.Round(vec.X, 2), (float)Math.Round(vec.Y, 2), (float)Math.Round(vec.Z, 2));
+
+		private void HandleInput()
+		{
+			if (InputManager.Keyboard.IsKeyPressed(Keys.D1))
+				Level = RenderLevel.Default;
+			if (InputManager.Keyboard.IsKeyPressed(Keys.D2))
+				Level = RenderLevel.Default | RenderLevel.WireFrame;
+			if (InputManager.Keyboard.IsKeyPressed(Keys.D3))
+				Level = RenderLevel.WireFrame;
+			if (InputManager.Keyboard.IsKeyReleased(Keys.R))
+			{
+				Transform.Reset(scale: false);
+				Momentum.Reset();
+			}
+			if (InputManager.Keyboard.IsKeyDown(Keys.Escape))
+				GetParent<Scene>().Game.Close();
+
+			currentZoomLevel = Math.Clamp(currentZoomLevel + (int)InputManager.Mouse.ScrollDelta.Y, 0, zoomLevels.Length - 1);
+			Camera.Zoom = zoomLevels[currentZoomLevel];
 		}
 	}
 }

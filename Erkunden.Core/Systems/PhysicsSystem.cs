@@ -18,22 +18,18 @@ namespace Erkunden.Core.Systems
 			var momentum = gameObject.Get<Momentum>(MomentumType);
 			if (momentum == null) return;
 
-			var time = (float)gameTime.ellapsed;
-
 			// Reduce momentum based on drag values
-			if (momentum.LinearDrag != 0)
-				ReduceToZero(ref momentum.Linear, momentum.LinearDrag * time);
-			if (momentum.ScalarDrag != 0)
-				ReduceToZero(ref momentum.Linear, momentum.ScalarDrag * time);
-			if (momentum.AngularDrag != 0)
-				ReduceToZero(ref momentum.Linear, momentum.AngularDrag * time);
+			ReduceToZero(ref momentum.Linear, momentum.LinearDrag * gameTime.ellapsed);
+			ReduceToZero(ref momentum.Scalar, momentum.ScalarDrag * gameTime.ellapsed);
+			ReduceToZero(ref momentum.Angular, momentum.AngularDrag * gameTime.ellapsed);
 
-			if (momentum.Linear != Vector3.Zero)
-				gameObject.Transform.Position += momentum.Linear * time;
-			if (momentum.Scalar != Vector3.Zero)
-				gameObject.Transform.Scale += momentum.Scalar * time;
-			if (momentum.Angular != Vector3.Zero)
-				gameObject.Transform.Rotation *= Quaternion.FromEulerAngles(momentum.Angular * time);
+			Vector3.Add(in momentum.Linear, momentum.LinearAccel * gameTime.ellapsed, out momentum.Linear);
+			Vector3.Add(in momentum.Scalar, momentum.ScalarAccel * gameTime.ellapsed, out momentum.Scalar);
+			Vector3.Add(in momentum.Angular, momentum.AngularAccel * gameTime.ellapsed, out momentum.Angular);
+
+			gameObject.Transform.Position += momentum.Linear * gameTime.ellapsed;
+			gameObject.Transform.Scale += momentum.Scalar * gameTime.ellapsed;
+			gameObject.Transform.Rotation *= Quaternion.FromEulerAngles(momentum.Angular * gameTime.ellapsed);
 		}
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private float ReduceToZero(in float left, in float right) => left < 0 ? Math.Min(0, left + right) : Math.Max(0, left - right);

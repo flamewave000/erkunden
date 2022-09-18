@@ -8,7 +8,7 @@ namespace Erkunden.Client.Entities.Cameras
 
 		protected override void GenerateView(out Matrix4 view)
 		{
-			view = Matrix4.LookAt(Position, Position + Direction.Normalized(), UpVec);
+			view = Matrix4.LookAt(Position, Position + Direction.Normalized(), Vector3.UnitY);
 		}
 	}
 }

@@ -1,12 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Erkunden.Core.Util
+﻿namespace Erkunden.Core.Util
 {
 	public struct GameTime
 	{
-		public double ellapsed;
-		public double total;
+		public float ellapsed;
+		public float ellapsedSquared;
+		public float total;
+		public double ellapsedLong;
+		public double ellapsedSquaredLong;
+		public double totalLong;
+
+		public void Update(double deltaTime)
+		{
+			totalLong += deltaTime;
+			ellapsedLong = deltaTime;
+			ellapsedSquaredLong = deltaTime * deltaTime;
+			total = (float)totalLong;
+			ellapsed = (float)ellapsedLong;
+			ellapsedSquared = (float)ellapsedSquaredLong;
+		}
 	}
 }

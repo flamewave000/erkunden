@@ -5,28 +5,28 @@ namespace Erkunden.Client.Entities.Cameras
 {
 	public interface ICamera
 	{
-		Vector3 UpVec { get; }
-		Vector3 Position { get; }
-		Matrix4 ViewMatrix { get; }
+		ref Vector3 Position { get; }
+		ref Vector3 LookAt { get; }
+		ref Matrix4 ViewMatrix { get; }
 		void BindView(Shader shader);
 	}
 
 	public abstract class Camera : ECS.IComponent, ICamera
 	{
-		protected Matrix4 viewMat4;
-		protected Vector3 upVec = Vector3.UnitY;
+		protected Matrix4 view;
 		protected Vector3 position = Vector3.Zero;
+		protected Vector3 lookAt = -Vector3.UnitZ;
 
-		public Vector3 UpVec { get => upVec; set => upVec = value; }
-		public Vector3 Position { get => position; set => position = value; }
-		public Matrix4 ViewMatrix => viewMat4;
+		public ref Vector3 Position => ref position;
+		public ref Vector3 LookAt => ref lookAt;
+		public ref Matrix4 ViewMatrix => ref view;
 
 		protected Camera() { }
 
 		public void BindView(Shader shader)
 		{
-			GenerateView(out viewMat4);
-			shader.SetView(ref viewMat4);
+			GenerateView(out view);
+			shader.SetView(ref view);
 		}
 
 		protected abstract void GenerateView(out Matrix4 view);

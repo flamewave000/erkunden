@@ -46,6 +46,7 @@ namespace Erkunden.Client.AssetManagement.Fonts
 			float scale = fontSize / (float)Meta.Info.FontSize;
 			float lineHeight = Body.Common.LineHeight * scale;
 			var chars = GetScaledChars(fontSize, scale);
+			var cursor = position;
 
 			float kern;
 			ScaledCharBlock block;
@@ -53,16 +54,16 @@ namespace Erkunden.Client.AssetManagement.Fonts
 			{
 				// Ignore Carriage Returns
 				if (text[c] == '\r') continue;
+				// If we have hit a New Line, push down
+				if (text[c] == '\n')
+				{
+					cursor.Y += lineHeight;
+					cursor.X = position.X;
+					continue;
+				}
 				// If the character is unknown, use Invalid Glyph
 				if (!characters.ContainsKey(text[c]))
 					block = chars[characters[uint.MaxValue]];
-				// If we have hit a New Line, push down
-				else if (text[c] == '\n')
-				{
-					position.Y += lineHeight;
-					position.X = 0;
-					continue;
-				}
 				// Otherwise fetch the regular Glyph
 				else block = chars[characters[text[c]]];
 
@@ -70,10 +71,10 @@ namespace Erkunden.Client.AssetManagement.Fonts
 				kern = (c > 0 ? CalcKerning(text[c], text[c - 1]) : 0) * scale;
 
 				// Draw the glyph at the calculated position
-				DrawGlyph(position, block, color);
+				DrawGlyph(cursor, block, color);
 
 				// After drawing glyph, Push forward to next character
-				position.X += kern + block.XAdvance;
+				cursor.X += kern + block.XAdvance;
 			}
 		}
 

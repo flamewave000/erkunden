@@ -5,12 +5,13 @@ using System.Runtime.CompilerServices;
 
 namespace Erkunden.ECS
 {
+
 	public abstract class Entity : IEquatable<Entity>
 	{
 		#region Fields
 		private bool UnSafe = true;
 		private Dictionary<EntityID, Entity> _children = new Dictionary<EntityID, Entity>();
-		private KeyedByTypeCollection<IComponent> _components = new KeyedByTypeCollection<IComponent>();
+		private ComponentCollection _components = new ComponentCollection();
 
 		public EntityID ID { get; internal set; }
 		public EntityID? ParentID { get; private set; }

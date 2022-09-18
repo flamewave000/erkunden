@@ -4,20 +4,9 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Nullable>enable</Nullable>
-    <Platforms>AnyCPU;ARM64</Platforms>
+    <Platforms>AnyCPU</Platforms>
     <AssemblyName>Erkunden</AssemblyName>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Assets\Images\Nebula\**" />
-    <EmbeddedResource Remove="Assets\Images\Nebula\**" />
-    <None Remove="Assets\Images\Nebula\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Assets\**\*" />
-  </ItemGroup>
 
   <ItemGroup>
     <Content Include="Assets\**\*.*">

@@ -16,6 +16,7 @@ namespace Erkunden.Client.Entities.Scenes
 			base.OnSetup();
 
 			CreateChild<NebulaSkyBox>();
+			CreateChild<Grid>().Transform.Position = new Vector3(0, -10f, 0);
 			Player = CreateChild<Player>();
 
 			DefaultCamera.Position = new Vector3(0, 2, 5);

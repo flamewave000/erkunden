@@ -23,22 +23,17 @@ namespace Erkunden.Client.Entities.Cameras
 			var target = Target;
 			if (target == null)
 			{
-				view = Matrix4.LookAt(RelativePosition / Zoom, LookAtOffset, upVec);
+				view = Matrix4.LookAt(RelativePosition / Zoom, LookAtOffset, Vector3.UnitY);
 				return;
 			}
-			Vector4 eye = new Vector4(RelativePosition / Zoom, 1);
-			Vector4 up = new Vector4(UpVec, 1);
-			Vector4 ahead = new Vector4(LookAtOffset, 1);
+			Matrix4 targetMatrix = Matrix4.Identity;
+			target.GenerateMatrix(target.Type, true, true, ref targetMatrix);
+			targetMatrix = targetMatrix.ClearScale();
 
-			// Transform the eye, up, and ahead vectors to the Target's space
-			Vector4.TransformRow(in eye, target.Matrix.ClearScale(), out eye);
-			Vector4.Transform(in up, target.Rotation, out up);
-			Vector4.TransformRow(in ahead, target.Matrix.ClearScale(), out ahead);
-
-			// Set our position to the one calculated for eye
-			Position = eye.Xyz;
-
-			view = Matrix4.LookAt(Position, ahead.Xyz, up.Xyz);
+			// Transform the eye, and ahead vectors to the Target's space
+			Position = (new Vector4(RelativePosition / Zoom, 1) * targetMatrix).Xyz;
+			LookAt = (new Vector4(LookAtOffset, 1) * targetMatrix).Xyz;
+			view = Matrix4.LookAt(Position, LookAt, (Vector4.UnitY * targetMatrix).Xyz);
 		}
 	}
 }

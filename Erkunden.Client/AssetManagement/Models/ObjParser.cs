@@ -114,6 +114,8 @@ namespace Erkunden.Client.AssetManagement.Models
 							continue;
 						// Polygon Indicies
 						case "f":
+							if(partName == null)
+								pushPart("part" + parts.Count);
 							// f v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3 v#/vt#/vn#
 							// Split the indexes
 							int[] vertex;
