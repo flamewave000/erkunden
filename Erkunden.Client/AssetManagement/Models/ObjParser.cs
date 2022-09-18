@@ -11,6 +11,7 @@ using OpenTK.Mathematics;
 
 namespace Erkunden.Client.AssetManagement.Models
 {
+	public class InvalidPrimitiveTypeException : Exception { }
 	/**
 	 * <summary>Parses the Wavefront Model file format <b>.OBJ</b></summary>
 	 * <see cref="https://en.wikipedia.org/wiki/Wavefront_.obj_file"/>
@@ -114,27 +115,47 @@ namespace Erkunden.Client.AssetManagement.Models
 							continue;
 						// Polygon Indicies
 						case "f":
-							if(partName == null)
+							if (partName == null)
 								pushPart("part" + parts.Count);
 							// f v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3 v#/vt#/vn#
 							// Split the indexes
+							VertexTextureNormal[] vertexes = new VertexTextureNormal[tokens.Length - 1];
 							int[] vertex;
-							foreach (var token in tokens.AsSpan(1))
+							count++;
+							for (int c = 0; c < vertexes.Length; c++)
 							{
-								count++;
-								vertex = token.Split('/').Select(AsIndex).ToArray();
-								vertexTextureNormals.Add(new VertexTextureNormal(
+								vertex = tokens[c + 1]
+									.Split('/')
+									.Select(AsIndex)
+									.ToArray();
+								vertexes[c] = new VertexTextureNormal(
 									verts[vertex[0]],
 									texcs[vertex[1]],
 									norms[vertex[2]]
-								));
+								);
 							};
 							// Determine what kind of primitive is being used
 							switch (tokens.Length - 1)
 							{
-								case 3: primitiveType = PrimitiveType.Triangles; break;
-								case 4: primitiveType = PrimitiveType.Quads; break;
-								default: primitiveType = PrimitiveType.TriangleFan; break;
+								case 3:
+									primitiveType = PrimitiveType.Triangles;
+									vertexTextureNormals.AddRange(vertexes);
+									count += 6;
+									break;
+								case 4:
+									primitiveType = PrimitiveType.Triangles;
+									vertexTextureNormals.AddRange(new VertexTextureNormal[]
+									{
+										vertexes[0], vertexes[1], vertexes[2],
+										vertexes[2], vertexes[3], vertexes[0]
+									});
+									count += 6;
+									break;
+								default:
+									primitiveType = PrimitiveType.TriangleFan;
+									vertexTextureNormals.AddRange(vertexes);
+									count += vertexes.Length;
+									break;
 							}
 							continue;
 						default: continue;
