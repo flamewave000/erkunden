@@ -10,14 +10,14 @@ namespace Erkunden.Client.Lights
 		public float QuadraticFalloff = 0.2f;
 		public Vector3 Position = Vector3.Zero;
 
-		public override void Bind(Shader shader)
+		public override void Bind(Shader shader, int index)
 		{
-			base.Bind(shader);
-			shader.SetInt("u_Light.type", (int)LightType.Point);
-			shader.SetVector3("u_Light.position", Position);
-			shader.SetFloat("u_Light.constant", Constant);
-			shader.SetFloat("u_Light.linear", LinearFalloff);
-			shader.SetFloat("u_Light.quadratic", QuadraticFalloff);
+			base.Bind(shader, index);
+			shader.SetInt("u_Lights[" + index + "].type", (int)LightType.Point);
+			shader.SetVector3("u_Lights[" + index + "].position", Position);
+			shader.SetFloat("u_Lights[" + index + "].constant", Constant);
+			shader.SetFloat("u_Lights[" + index + "].linear", LinearFalloff);
+			shader.SetFloat("u_Lights[" + index + "].quadratic", QuadraticFalloff);
 		}
 	}
 }

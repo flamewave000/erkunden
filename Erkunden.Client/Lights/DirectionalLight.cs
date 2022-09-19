@@ -7,11 +7,11 @@ namespace Erkunden.Client.Lights
 	{
 		public Vector3 Direction = new Vector3(-1, 0, 1).Normalized();
 
-		public override void Bind(Shader shader)
+		public override void Bind(Shader shader, int index)
 		{
-			base.Bind(shader);
-			shader.SetInt("u_Light.type", (int)LightType.Directional);
-			shader.SetVector3("u_Light.direction", Direction.Normalized());
+			base.Bind(shader, index);
+			shader.SetInt("u_Lights[" + index + "].type", (int)LightType.Directional);
+			shader.SetVector3("u_Lights[" + index + "].direction", Direction.Normalized());
 		}
 	}
 }

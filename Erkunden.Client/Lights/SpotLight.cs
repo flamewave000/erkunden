@@ -8,12 +8,12 @@ namespace Erkunden.Client.Lights
 		public Vector3 Direction = -Vector3.UnitZ;
 		public float CutOff = MathHelper.DegreesToRadians(45f);
 
-		public override void Bind(Shader shader)
+		public override void Bind(Shader shader, int index)
 		{
-			base.Bind(shader);
-			shader.SetInt("u_Light.type", (int)LightType.Spot);
-			shader.SetVector3("u_Light.direction", Direction.Normalized());
-			shader.SetFloat("u_Light.cutoff", CutOff);
+			base.Bind(shader, index);
+			shader.SetInt("u_Lights[" + index + "].type", (int)LightType.Spot);
+			shader.SetVector3("u_Lights[" + index + "].direction", Direction.Normalized());
+			shader.SetFloat("u_Lights[" + index + "].cutoff", CutOff);
 		}
 	}
 }

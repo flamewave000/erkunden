@@ -37,91 +37,76 @@ struct Light {
 };
 
 uniform vec3 u_EyePos;
-uniform Light u_Light;
-uniform mat4 u_View;
+
+#define MAX_LIGHT_COUNT 10
+uniform int u_LightCount;
+uniform Light u_Lights[MAX_LIGHT_COUNT];
+
+vec3 ambientColor;
+vec3 specularColor;
 
 vec4 getColour(vec4 color, sampler2D tex) { return textureSize(tex, 0).x > 1 ? texture(tex, f_TexCoord.st) : color; }
 
-float attenuate(float distance) {
-	return 1.0 / (u_Light.constant + (u_Light.linear * distance) + (u_Light.quadratic * (distance * distance)));
+float attenuate(Light light, float distance) {
+	return 1.0 / (light.constant + (light.linear * distance) + (light.quadratic * (distance * distance)));
 }
 
 vec3 CalculateSpecularColor(vec3 lightNormal, vec3 eyeNormal) {
-	return getColour(u_SpecularColor, u_SpecularTexture).rgb *
-		   pow(max(dot(reflect(-lightNormal, f_Normal), eyeNormal), 0), u_Shininess);
+	return specularColor * pow(max(dot(reflect(-lightNormal, f_Normal), eyeNormal), 0), u_Shininess);
 }
 
-vec3 CalculateLightColor(vec3 lightNormal) { return u_Light.color.rgb * (max(dot(f_Normal, lightNormal), 0) * 2); }
-
-vec3 CalculateAmbientColor() {
-	return getColour(u_Light.ambientColor, u_AmbientTexture).rgb * u_Light.ambientColor.rgb *
-		   clamp(u_Light.ambientStrength, 0.1, 1);
+vec3 CalculateLightColor(Light light, vec3 lightNormal) {
+	return light.color.rgb * (max(dot(f_Normal, lightNormal), 0) * 2);
 }
 
-vec4 AggregateColor(vec3 light, vec3 ambient, vec3 specular) {
-	vec4 diffuse = getColour(u_DiffuseColor, u_DiffuseTexture);
-	return vec4(diffuse.xyz * (light + ambient + specular), diffuse.a);
+vec3 CalculateAmbientColor(Light light) {
+	return ambientColor * light.ambientColor.rgb * clamp(light.ambientStrength, 0.1, 1);
 }
 
-void CalulatePointLight() {
+vec3 CalulatePointLight(Light light) {
 	// Set up light vertices
-	vec3 lightVec = u_Light.position - f_FragPos;
+	vec3 lightVec = light.position - f_FragPos;
 	vec3 lightNormal = normalize(lightVec);
 
 	// Calculate the attenuation for the light
-	float attenuation = attenuate(length(lightVec));
+	float attenuation = attenuate(light, length(lightVec));
 	// Calculate Ambient Colour
-	vec3 ambientColor = CalculateAmbientColor() * attenuation;
+	vec3 ambientColor = CalculateAmbientColor(light) * attenuation;
 	// Calculate Light Colour
-	vec3 lightColor = CalculateLightColor(lightNormal) * attenuation * 2;
+	vec3 lightColor = CalculateLightColor(light, lightNormal) * attenuation * 2;
 	// Calculate Specular Colour
 	vec3 specularColor = CalculateSpecularColor(lightNormal, normalize(u_EyePos - f_FragPos)) * attenuation;
-	// Calculate the final colour
-	FragColor = AggregateColor(lightColor, ambientColor, specularColor);
+	return ambientColor + lightColor + specularColor;
 }
 
-void CalulateDirectionalLight() {
+vec3 CalulateDirectionalLight(Light light) {
 	// Calculate Ambient Colour
-	vec3 ambientColor = CalculateAmbientColor();
+	vec3 ambientColor = CalculateAmbientColor(light);
 	// Calculate Light Colour
-	vec3 lightColor = CalculateLightColor(u_Light.direction);
+	vec3 lightColor = CalculateLightColor(light, light.direction);
 	// Calculate Specular Colour
-	vec3 specularColor = CalculateSpecularColor(u_Light.direction, normalize(u_EyePos - f_FragPos));
+	vec3 specularColor = CalculateSpecularColor(light.direction, normalize(u_EyePos - f_FragPos));
 	// Calculate the final colour
-	FragColor = AggregateColor(lightColor, ambientColor, specularColor);
+	return lightColor + ambientColor + specularColor;
 }
-
-// void CalulateSpotLight() {
-// 	// Set up light vertices
-// 	vec3 lightVec = u_Light.position - f_FragPos;
-// 	vec3 lightNormal = normalize(lightVec);
-// 	vec3 eyeNormal = normalize(u_EyePos - f_FragPos);
-
-// 	// Calculate the attenuation for the light
-// 	float attenuation = attenuate(length(lightVec));
-// 	// Calculate Ambient Colour
-// 	vec3 ambientColor = CalculateAmbientColor() * attenuation;
-// 	// Calculate Light Colour
-// 	vec3 lightColor = CalculateLightColor(lightNormal) * attenuation * 2;
-// 	// Calculate Specular Colour
-// 	vec3 specularColor = CalculateSpecularColor(lightNormal, eyeNormal) * attenuation;
-// 	// Calculate the final colour
-// 	FragColor = AggregateColor(lightColor, ambientColor, specularColor);
-// }
 
 void main() {
-	switch (u_Light.type) {
-	case POINT:
-		CalulatePointLight();
-		break;
-	case DIRECT:
-		CalulateDirectionalLight();
-		break;
-	// case SPOT:
-	// 	CalulateSpotLight();
-	// 	break;
-	default:
-		FragColor = vec4(1, 0, 1, 1);
-		break;
+	ambientColor = getColour(u_AmbientColor, u_AmbientTexture).rgb;
+	specularColor = getColour(u_SpecularColor, u_SpecularTexture).rgb;
+
+	vec3 lightTotal = vec3(0);
+	int lightCount = min(u_LightCount, MAX_LIGHT_COUNT);
+
+	for (int i = 0; i < lightCount; i++) {
+		switch (u_Lights[i].type) {
+		case POINT:
+			lightTotal += CalulatePointLight(u_Lights[i]);
+			break;
+		case DIRECT:
+			lightTotal += CalulateDirectionalLight(u_Lights[i]);
+			break;
+		}
 	}
+	vec4 diffuse = getColour(u_DiffuseColor, u_DiffuseTexture);
+	FragColor = vec4(diffuse.xyz * lightTotal, diffuse.a);
 }

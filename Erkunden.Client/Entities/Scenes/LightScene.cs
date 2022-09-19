@@ -15,9 +15,13 @@ namespace Erkunden.Client.Entities.Scenes
 
 		float cameraRotation = 0f;
 
-		public ModelCollection Models;
-		public LightCollection Lights;
-		public Controller Controller;
+		public PointLight PointLight = new PointLight()
+		{
+			Position = new Vector3(4, 4, 2)
+		};
+		public ModelCollection Models = null!;
+		public LightCollection Lights = null!;
+		public Controller Controller = null!;
 		public Quaternion CamRotation = Quaternion.Identity;
 
 		protected override void OnSetup()
@@ -29,10 +33,7 @@ namespace Erkunden.Client.Entities.Scenes
 			Models = Add<ModelCollection>();
 			Lights = Add<LightCollection>();
 
-			Lights.Add(new PointLight()
-			{
-				Position = new Vector3(4, 4, 2)
-			});
+			Lights.Add(PointLight);
 			Lights.Add(new DirectionalLight()
 			{
 				Direction = new Vector3(-1, 1, 1),
@@ -54,14 +55,15 @@ namespace Erkunden.Client.Entities.Scenes
 			cameraRotation += Controller.GetRotation().Y * gameTime.ellapsed * 2;
 			var rot = Quaternion.FromAxisAngle(Vector3.UnitY, cameraRotation);
 
-			(Lights[0] as PointLight)!.Position += Vector3.Transform(Controller.GetMovement(), rot) * gameTime.ellapsed * 2;
+			PointLight.Position += Vector3.Transform(Controller.GetMovement(), rot) * gameTime.ellapsed * 2;
 			DefaultCamera.Position = Vector3.Transform(new Vector3(0, 2, 5), rot);
 		}
 
 		public override void OnDraw(Shader shader, in GameTime gameTime)
 		{
 			base.OnDraw(shader, gameTime);
-			Lights[0].Bind(shader);
+
+			Lights.BindLights(shader);
 
 			var model = Matrix4.Identity;
 			shader.SetModel(ref model);

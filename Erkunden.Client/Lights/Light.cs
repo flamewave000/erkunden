@@ -15,11 +15,11 @@ namespace Erkunden.Client.Lights
 		public Color4 AmbientColor = Color4.White;
 		public float AmbientStrength = 0.1f;
 
-		public virtual void Bind(Shader shader)
+		public virtual void Bind(Shader shader, int index)
 		{
-			shader.SetColor4("u_Light.color", Color);
-			shader.SetColor4("u_Light.ambientColor", AmbientColor);
-			shader.SetFloat("u_Light.ambientStrength", AmbientStrength);
+			shader.SetColor4("u_Lights[" + index + "].color", Color);
+			shader.SetColor4("u_Lights[" + index + "].ambientColor", AmbientColor);
+			shader.SetFloat("u_Lights[" + index + "].ambientStrength", AmbientStrength);
 		}
 	}
 }
