@@ -13,10 +13,11 @@ namespace Erkunden.Client.Lights
 		public override void Bind(Shader shader)
 		{
 			base.Bind(shader);
+			shader.SetInt("u_Light.type", (int)LightType.Point);
+			shader.SetVector3("u_Light.position", Position);
 			shader.SetFloat("u_Light.constant", Constant);
 			shader.SetFloat("u_Light.linear", LinearFalloff);
 			shader.SetFloat("u_Light.quadratic", QuadraticFalloff);
-			shader.SetVector3("u_Light.vector", Position);
 		}
 	}
 }

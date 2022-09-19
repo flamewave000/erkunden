@@ -3,6 +3,12 @@ using OpenTK.Mathematics;
 
 namespace Erkunden.Client.Lights
 {
+	public enum LightType
+	{
+		Point = 0,
+		Directional = 1,
+		Spot = 2
+	}
 	public abstract class Light
 	{
 		public Color4 Color = Color4.White;

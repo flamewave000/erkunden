@@ -10,7 +10,8 @@ namespace Erkunden.Client.Lights
 		public override void Bind(Shader shader)
 		{
 			base.Bind(shader);
-			shader.SetVector3("u_Light.vector", Direction);
+			shader.SetInt("u_Light.type", (int)LightType.Directional);
+			shader.SetVector3("u_Light.direction", Direction.Normalized());
 		}
 	}
 }

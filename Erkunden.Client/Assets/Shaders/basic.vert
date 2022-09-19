@@ -18,17 +18,8 @@ uniform mat3 u_ModelNormal;
 
 void main() {
 	f_TexCoord = a_TexCoord;
-	gl_Position = vec4(a_Position, 1) * u_Model * u_View * u_Projection;
-
-	mat3 normalMatrix = transpose(inverse(mat3(u_Model)));
-	f_Normal = normalize(a_Normal * normalMatrix);
-	f_FragPos = (vec4(a_Position, 1) * u_Model).xyz;
-
-	// vec4 position = vec4(a_Position, 1.0);
-
-	// f_FragPos = (position * u_Model * u_View).xyz;
-	// f_TexCoord = a_TexCoord;
-	// f_Normal = a_Normal * u_ModelNormal;
-
-	// gl_Position = position * u_Model * u_View * u_Projection;
+	vec4 position = vec4(a_Position, 1) * u_Model;
+	gl_Position = position * u_View * u_Projection;
+	f_Normal = normalize(a_Normal * u_ModelNormal);
+	f_FragPos = position.xyz;
 }

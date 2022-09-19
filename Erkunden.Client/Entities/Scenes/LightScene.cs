@@ -33,6 +33,12 @@ namespace Erkunden.Client.Entities.Scenes
 			{
 				Position = new Vector3(4, 4, 2)
 			});
+			Lights.Add(new DirectionalLight()
+			{
+				Direction = new Vector3(-1, 1, 1),
+				AmbientStrength = 0,
+				Color = Color4.CornflowerBlue
+			});
 
 			Models.AddModel(AssetProvider.Get<Model>("LightBall"));
 			Models.AddModel(AssetProvider.Get<Model>("Crate"));

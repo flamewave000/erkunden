@@ -2,6 +2,6 @@
 BasedOnStyle: LLVM
 IndentWidth: 4
 TabWidth: 4
-UseTab: AlignWithSpaces
+UseTab: Always 
 ColumnLimit: 120
 ---
