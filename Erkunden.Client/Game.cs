@@ -36,7 +36,7 @@ namespace Erkunden.Client
 		public Game() : base(GameWindowSettings.Default, new NativeWindowSettings()
 		{
 			Title = "Erkunden",
-			Size = new Vector2i(800, 600)
+			Size = new Vector2i(1280, 720)
 		})
 		{
 			Levels = Enum.GetValues(typeof(RenderLevel)).Cast<RenderLevel>().ToArray();
@@ -71,6 +71,8 @@ namespace Erkunden.Client
 			SpriteBatch.Initialize(this);
 
 			Scenes.Add(EntityFactory.Create<SpaceScene>(this));
+			Scenes.Add(EntityFactory.Create<LightScene>(this));
+			Scenes[0].IsVisible = false;
 
 			base.OnLoad();
 			Log.Dedent();
@@ -129,21 +131,25 @@ namespace Erkunden.Client
 				shader.Use();
 				foreach (var scene in Scenes)
 				{
-					scene.OnPreDraw(shader, renderTime);
+					if (!scene.IsVisible) continue;
 
 					var sceneObjects = scene
 						.GetAllChildren()
 						.FilterAsType<ClientGameObject>()
 						.Where(x => x.IsVisible && x.Level.HasFlag(level))
 						.ToList();
+					scene.OnPreDraw(shader, renderTime);
 					foreach (var gameObject in sceneObjects)
 					{
 						gameObject.OnPreDraw(shader, renderTime);
 					}
+					if (scene.Level.HasFlag(level))
+						scene.OnDraw(shader, renderTime);
 					foreach (var gameObject in sceneObjects)
 					{
 						gameObject.OnDraw(shader, renderTime);
 					}
+					scene.OnPostDraw(shader, renderTime);
 					foreach (var gameObject in sceneObjects)
 					{
 						gameObject.OnPostDraw(shader, renderTime);

@@ -122,7 +122,7 @@ namespace Erkunden.Client.Utils
 				{
 					SpriteShader.SetBool("u_SingleChannel" + map, SpriteMaps[sprite + map].Texture.Texture2D.Format == PixelInternalFormat.R8);
 					SpriteShader.SetColor4("u_Tint" + map, SpriteMaps[sprite + map].Tint);
-					SpriteShader.SetTexture("u_Texture" + map, (TextureUnit)TEXTURE0 + map, ref SpriteMaps[sprite + map].Texture);
+					SpriteShader.SetTexture("u_Texture" + map, (TextureUnit)TEXTURE0 + map, SpriteMaps[sprite + map].Texture);
 				}
 				GL.DrawArrays(PrimitiveType.Triangles, sprite * 6, map * 6);
 			}

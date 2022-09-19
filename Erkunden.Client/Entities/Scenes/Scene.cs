@@ -8,7 +8,7 @@ namespace Erkunden.Client.Entities.Scenes
 {
 	public class Scene : ClientGameObject
 	{
-		protected DirectionCamera DefaultCamera = null!;
+		protected Camera DefaultCamera = null!;
 		public ICamera CurrentOrDefaultCamera => CurrentCamera ?? DefaultCamera;
 		public ICamera? CurrentCamera { get; set; } = null;
 		public ViewPort ViewPort { get; private set; } = null!;
@@ -34,7 +34,7 @@ namespace Erkunden.Client.Entities.Scenes
 		protected override void OnSetup()
 		{
 			// Initialize Default Camera Component
-			DefaultCamera = Add<DirectionCamera>();
+			DefaultCamera = Add<Camera>();
 			CurrentCamera = DefaultCamera;
 
 			// Initialize View Port component

@@ -15,10 +15,10 @@ namespace Erkunden.Client.Components
 		public Vector3 GetMovement()
 		{
 			int X = 0, Y = 0, Z = 0;
-			if (InputManager.Keyboard.IsKeyDown(Keys.W)) Z--;
-			if (InputManager.Keyboard.IsKeyDown(Keys.S)) Z++;
-			if (InputManager.Keyboard.IsKeyDown(Keys.D)) X++;
-			if (InputManager.Keyboard.IsKeyDown(Keys.A)) X--;
+			if (InputManager.Keyboard.IsKeyDown(Keys.W) || InputManager.Keyboard.IsKeyDown(Keys.Up)) Z--;
+			if (InputManager.Keyboard.IsKeyDown(Keys.S) || InputManager.Keyboard.IsKeyDown(Keys.Down)) Z++;
+			if (InputManager.Keyboard.IsKeyDown(Keys.D) || InputManager.Keyboard.IsKeyDown(Keys.Right)) X++;
+			if (InputManager.Keyboard.IsKeyDown(Keys.A) || InputManager.Keyboard.IsKeyDown(Keys.Left)) X--;
 			if (InputManager.Keyboard.IsKeyDown(Keys.Space)) Y++;
 			if (InputManager.Keyboard.IsKeyDown(Keys.LeftShift)) Y--;
 			int total = Math.Abs(X) + Math.Abs(Y) + Math.Abs(Z);

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using Erkunden.Client.AssetManagement.Shaders;
 using Erkunden.Client.AssetManagement.Textures;
-using Erkunden.Client.Graphics.Objects;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
@@ -37,10 +35,10 @@ namespace Erkunden.Client.AssetManagement.Materials
 			if (DiffuseColor.HasValue) shader.SetDiffuseColor(DiffuseColor.Value);
 			if (SpecularColor.HasValue) shader.SetSpecularColor(SpecularColor.Value);
 			// Bind the textures
-			if (AmbientMap != null) shader.SetAmbientTexture(TextureUnit.Texture0, ref AmbientMap);
-			if (DiffuseMap != null) shader.SetDiffuseTexture(TextureUnit.Texture1, ref DiffuseMap);
-			if (SpecularMap != null) shader.SetSpecularTexture(TextureUnit.Texture2, ref SpecularMap);
-			if (NormalMap != null) shader.SetNormalTexture(TextureUnit.Texture3, ref NormalMap);
+			shader.SetAmbientTexture(TextureUnit.Texture0, AmbientMap);
+			shader.SetDiffuseTexture(TextureUnit.Texture1, DiffuseMap);
+			shader.SetSpecularTexture(TextureUnit.Texture2, SpecularMap);
+			shader.SetNormalTexture(TextureUnit.Texture3, NormalMap);
 			// Set additional fields
 			if (ShininessLocation >= 0)
 				shader.SetFloat("u_Shininess", Shininess);

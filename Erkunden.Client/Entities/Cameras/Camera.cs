@@ -11,24 +11,26 @@ namespace Erkunden.Client.Entities.Cameras
 		void BindView(Shader shader);
 	}
 
-	public abstract class Camera : ECS.IComponent, ICamera
+	public class Camera : ECS.IComponent, ICamera
 	{
 		protected Matrix4 view;
-		protected Vector3 position = Vector3.Zero;
-		protected Vector3 lookAt = -Vector3.UnitZ;
+		protected Vector3 position = Vector3.UnitZ;
+		protected Vector3 lookAt = Vector3.Zero;
 
 		public ref Vector3 Position => ref position;
 		public ref Vector3 LookAt => ref lookAt;
 		public ref Matrix4 ViewMatrix => ref view;
 
-		protected Camera() { }
-
 		public void BindView(Shader shader)
 		{
 			GenerateView(out view);
 			shader.SetView(ref view);
+			shader.SetVector3("u_EyePos", position);
 		}
 
-		protected abstract void GenerateView(out Matrix4 view);
+		protected virtual void GenerateView(out Matrix4 view)
+		{
+			view = Matrix4.LookAt(position, lookAt, Vector3.UnitY);
+		}
 	}
 }

@@ -23,6 +23,7 @@ namespace Erkunden.Client.AssetManagement.Shaders
 		public int AttributeNormal { get; private set; } = -1;
 
 		public int MatrixModel { get; private set; } = -1;
+		public int MatrixModelNormal { get; private set; } = -1;
 		public int MatrixView { get; private set; } = -1;
 		public int MatrixProjection { get; private set; } = -1;
 
@@ -77,6 +78,7 @@ namespace Erkunden.Client.AssetManagement.Shaders
 			AttributeNormal = GetAttribLocation(Config.AttributeNormal);
 
 			MatrixModel = GetUniformLocation(Config.MatrixModel);
+			MatrixModelNormal = GetUniformLocation(Config.MatrixModelNormal);
 			MatrixView = GetUniformLocation(Config.MatrixView);
 			MatrixProjection = GetUniformLocation(Config.MatrixProjection);
 
@@ -104,6 +106,10 @@ namespace Erkunden.Client.AssetManagement.Shaders
 		public void SetBool(string name, bool value) => GL.Uniform1(GetUniformLocation(name), value ? 1 : 0);
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SetMat4(string name, ref Matrix4 value) => GL.UniformMatrix4(GetUniformLocation(name), true, ref value);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void SetVector4(string name, Vector4 value) => GL.Uniform4(GetUniformLocation(name), value);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void SetVector3(string name, Vector3 value) => GL.Uniform3(GetUniformLocation(name), value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int GetAttribLocation(string attribName) => GL.GetAttribLocation(Program.Handle, attribName);
@@ -118,26 +124,34 @@ namespace Erkunden.Client.AssetManagement.Shaders
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SetModel(ref Matrix4 value) => GL.UniformMatrix4(MatrixModel, true, ref value);
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void SetModelNormal(ref Matrix3 value) => GL.UniformMatrix3(MatrixModelNormal, true, ref value);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SetView(ref Matrix4 value) => GL.UniformMatrix4(MatrixView, true, ref value);
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SetProjection(ref Matrix4 value) => GL.UniformMatrix4(MatrixProjection, true, ref value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void SetTexture(string name, TextureUnit unit, ref Texture texture) => SetTexture(GetUniformLocation(name), unit, ref texture);
-		public void SetTexture(int location, TextureUnit unit, ref Texture texture)
+		public void SetTexture(string name, TextureUnit unit, Texture? texture) => SetTexture(GetUniformLocation(name), unit, texture);
+		public void SetTexture(int location, TextureUnit unit, Texture? texture)
 		{
+			if (texture == null)
+			{
+				GL.ActiveTexture(unit);
+				GL.BindTexture(TextureTarget.Texture2D, 0);
+				return;
+			}
 			texture.Bind(unit);
 			GL.Uniform1(location, (int)unit - (int)TextureUnit.Texture0);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void SetAmbientTexture(TextureUnit unit, ref Texture texture) => SetTexture(TextureAmbient, unit, ref texture);
+		public void SetAmbientTexture(TextureUnit unit, Texture? texture) => SetTexture(TextureAmbient, unit, texture);
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void SetDiffuseTexture(TextureUnit unit, ref Texture texture) => SetTexture(TextureDiffuse, unit, ref texture);
+		public void SetDiffuseTexture(TextureUnit unit, Texture? texture) => SetTexture(TextureDiffuse, unit, texture);
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void SetSpecularTexture(TextureUnit unit, ref Texture texture) => SetTexture(TextureSpecular, unit, ref texture);
+		public void SetSpecularTexture(TextureUnit unit, Texture? texture) => SetTexture(TextureSpecular, unit, texture);
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void SetNormalTexture(TextureUnit unit, ref Texture texture) => SetTexture(TextureNormal, unit, ref texture);
+		public void SetNormalTexture(TextureUnit unit, Texture? texture) => SetTexture(TextureNormal, unit, texture);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SetAmbientColor(Color4 value) => GL.Uniform4(ColorAmbient, value);

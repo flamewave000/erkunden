@@ -58,13 +58,13 @@ namespace Erkunden.ECS
 			_components.Add(element);
 			return element;
 		}
-		public void Add<T>(out T outVal) where T : IComponent, new()
+		public T Add<T>(in T component) where T : class, IComponent
 		{
 			if (UnSafe) throw new InvalidOperationException("Components must be added in the Setup() call");
-			IComponent component;
-			if (!_components.TryGetValue(typeof(T), out component))
-				component = new T();
-			outVal = (T)component;
+			if (_components.Contains(typeof(T)))
+				throw new Exception("Entity already contains component " + component.GetType().FullName);
+			_components.Add(component);
+			return component;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

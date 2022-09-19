@@ -1,4 +1,5 @@
 ﻿using System;
+using Erkunden.Client.AssetManagement.Shaders;
 using Erkunden.Client.Entities.SkyBoxes;
 using Erkunden.Core.Util;
 using OpenTK.Mathematics;
@@ -20,7 +21,6 @@ namespace Erkunden.Client.Entities.Scenes
 			Player = CreateChild<Player>();
 
 			DefaultCamera.Position = new Vector3(0, 2, 5);
-			DefaultCamera.Direction = -DefaultCamera.Position;
 
 			var rand = new Random();
 			for (int i = 0; i < 100; i++)
@@ -31,6 +31,14 @@ namespace Erkunden.Client.Entities.Scenes
 					((float)rand.NextDouble() * 100) - 50f
 				);
 			}
+		}
+
+		public override void OnPreDraw(Shader shader, in GameTime gameTime)
+		{
+			base.OnPreDraw(shader, gameTime);
+			shader.SetVector3("u_LightPos", Vector3.Zero);
+			shader.SetColor4("u_LightColor", Color4.White);
+			shader.SetVector3("u_EyePos", CurrentCamera!.Position);
 		}
 
 		public override void OnPostUpdate(in GameTime gameTime)

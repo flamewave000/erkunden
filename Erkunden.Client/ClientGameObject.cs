@@ -11,7 +11,11 @@ namespace Erkunden.Client
 		public bool IsVisible { get; set; } = true;
 		public RenderLevel Level { get; set; } = RenderLevel.Default;// | RenderLevel.WireFrame;
 
-		public virtual void BindMatrix(Shader shader) => shader.SetModel(ref Transform.Matrix);
+		public virtual void BindMatrix(Shader shader)
+		{
+			shader.SetModel(ref Transform.ModelMatrix);
+			shader.SetModelNormal(ref Transform.ModelNormalMatrix);
+		}
 		public int CompareTo([AllowNull] RenderLevel other) => ((int)Level).CompareTo((int)other);
 
 		public virtual void OnDraw(Shader shader, in GameTime gameTime) { BindMatrix(shader); }

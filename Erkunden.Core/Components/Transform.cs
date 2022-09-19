@@ -12,7 +12,8 @@ namespace Erkunden.Core.Components
 	[DataContract]
 	public class Transform
 	{
-		private Matrix4 mat4 = Matrix4.Identity;
+		private Matrix4 model = Matrix4.Identity;
+		private Matrix3 modelNormal = Matrix3.Identity;
 		private Vector3 sca = Vector3.One;
 		private Vector3 rad = Vector3.Zero;
 		private Quaternion orb = Quaternion.Identity;
@@ -38,7 +39,9 @@ namespace Erkunden.Core.Components
 		}
 
 		[IgnoreDataMember]
-		public ref Matrix4 Matrix => ref mat4;
+		public ref Matrix4 ModelMatrix => ref model;
+		[IgnoreDataMember]
+		public ref Matrix3 ModelNormalMatrix => ref modelNormal;
 		[IgnoreDataMember]
 		public Quaternion Rotation
 		{
@@ -85,8 +88,8 @@ namespace Erkunden.Core.Components
 
 		public ref Matrix4 UpdateMatrix(TransformType? typeOverride = null)
 		{
-			GenerateMatrix(typeOverride, false, false, ref mat4);
-			return ref mat4;
+			GenerateMatrix(typeOverride, false, false, ref model);
+			return ref model;
 		}
 		public void GenerateMatrix(TransformType? typeOverride, bool IgnoreTilt, bool ignoreDirty, ref Matrix4 result)
 		{
@@ -124,6 +127,10 @@ namespace Erkunden.Core.Components
 			// TRANSLATION
 			if (pos != Vector3.Zero)
 				Matrix4.Mult(result, Matrix4.CreateTranslation(pos), out result);
+
+			modelNormal = new Matrix3(ModelMatrix);
+			Matrix3.Invert(in modelNormal, out modelNormal);
+			Matrix3.Transpose(in modelNormal, out modelNormal);
 		}
 
 		public override string ToString() => $"P{Position}|S{Scale}|R({Rotation})";
@@ -131,7 +138,7 @@ namespace Erkunden.Core.Components
 		public void Reset(bool scale = true, bool position = true, bool rotation = true, bool orbit = true, bool radius = true, bool tilt = true)
 		{
 			IsDirty = true;
-			mat4 = Matrix4.Identity;
+			model = Matrix4.Identity;
 			if (scale) sca = Vector3.One;
 			if (radius) rad = Vector3.Zero;
 			if (orbit) orb = Quaternion.Identity;

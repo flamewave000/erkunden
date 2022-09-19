@@ -21,6 +21,7 @@ namespace Erkunden.Client.Graphics.Data
 		public string AttributeNormal;
 
 		public string MatrixModel;
+		public string MatrixModelNormal;
 		public string MatrixView;
 		public string MatrixProjection;
 
@@ -52,6 +53,7 @@ namespace Erkunden.Client.Graphics.Data
 			AttributeNormal = "a_Normal",
 
 			MatrixModel = "u_Model",
+			MatrixModelNormal = "u_ModelNormal",
 			MatrixView = "u_View",
 			MatrixProjection = "u_Projection",
 
