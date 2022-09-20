@@ -207,7 +207,7 @@ namespace Erkunden.Client.Utils
 
 		private static void Resize(int size)
 		{
-			if (size == SpriteCount) return;
+			if (size == Sprites.Length) return;
 			if (size < SpriteCount) throw new ArgumentOutOfRangeException(nameof(size), "Capacity  must be equal to or more than the current element count.");
 			Array.Resize(ref Sprites, size);
 			Array.Resize(ref SpriteMaps, size);

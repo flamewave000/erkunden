@@ -51,8 +51,8 @@ namespace Erkunden.Client
 
 			InputManager.Initialize(KeyboardState, MouseState);
 
-			GL.Enable(EnableCap.DebugOutput);
-			GL.DebugMessageCallback(DebugMessageHandler, IntPtr.Zero);
+			//GL.Enable(EnableCap.DebugOutput);
+			//GL.DebugMessageCallback(DebugMessageHandler, IntPtr.Zero);
 
 			GL.ClearColor(new Color4(32, 32, 32, 255));
 			GL.ClearDepth(float.MaxValue);
@@ -64,15 +64,16 @@ namespace Erkunden.Client
 			BMFParser.Register();
 			AssetProvider.LoadAssets("Assets/");
 
-			Layers[RenderLevel.SkyBox] = AssetProvider.Get<Shader>("SkyBox");
-			Layers[RenderLevel.Default] = AssetProvider.Get<Shader>("Default");
+			Layers[RenderLevel.SkyBox] = AssetProvider.Get<Shader>("Flat");
+			Layers[RenderLevel.Default] = AssetProvider.Get<Shader>("Phong");
 			Layers[RenderLevel.WireFrame] = AssetProvider.Get<Shader>("WireFrame");
 
 			SpriteBatch.Initialize(this);
 
 			Scenes.Add(EntityFactory.Create<SpaceScene>(this));
 			Scenes.Add(EntityFactory.Create<LightScene>(this));
-			Scenes[0].IsVisible = false;
+			Scenes[0].IsVisible = true;
+			Scenes[1].IsVisible = false;
 
 			base.OnLoad();
 			Log.Dedent();
@@ -138,18 +139,21 @@ namespace Erkunden.Client
 						.FilterAsType<ClientGameObject>()
 						.Where(x => x.IsVisible && x.Level.HasFlag(level))
 						.ToList();
-					scene.OnPreDraw(shader, renderTime);
+
+					scene.PrepareForDraw(shader, renderTime);
+					var drawableScene = scene is IDraw && ((IDraw)scene).Level.HasFlag(level) ? scene as IDraw : null;
+
+					drawableScene?.OnPreDraw(shader, renderTime);
 					foreach (var gameObject in sceneObjects)
 					{
 						gameObject.OnPreDraw(shader, renderTime);
 					}
-					if (scene.Level.HasFlag(level))
-						scene.OnDraw(shader, renderTime);
+					drawableScene?.OnDraw(shader, renderTime);
 					foreach (var gameObject in sceneObjects)
 					{
 						gameObject.OnDraw(shader, renderTime);
 					}
-					scene.OnPostDraw(shader, renderTime);
+					drawableScene?.OnPostDraw(shader, renderTime);
 					foreach (var gameObject in sceneObjects)
 					{
 						gameObject.OnPostDraw(shader, renderTime);

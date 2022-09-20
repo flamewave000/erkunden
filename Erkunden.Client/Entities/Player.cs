@@ -77,9 +77,9 @@ namespace Erkunden.Client.Entities
 			base.OnDraw(shader, gameTime);
 			Ship.Draw(shader);
 			SpriteFont.DrawText("Consolas", 20, new Vector2(20, 0), @$"
-        Position: {Round(Transform.Position)}
-        Rotation: {Round(Transform.Rotation.ToEulerAngles())}
-           Scale: {Round(Transform.Scale)}
+		Position: {Round(Transform.Position)}
+		Rotation: {Round(Transform.Rotation.ToEulerAngles())}
+		   Scale: {Round(Transform.Scale)}
  Linear Velocity: {Round(Momentum.Linear)}
 Angular Velocity: {Round(Momentum.Angular)}
 ", Color4.White);

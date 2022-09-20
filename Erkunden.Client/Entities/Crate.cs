@@ -25,6 +25,7 @@ namespace Erkunden.Client.Entities
 		protected override void OnSetup()
 		{
 			base.OnSetup();
+			Transform.Scale *= 5;
 			Momentum = Add<Momentum>();
 			CrateModel = AssetProvider.Get<Model>("Crate");
 			Momentum.Angular.X = MathHelper.DegreesToRadians(RandomAngle(20f, 90f));

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Erkunden.Client": {
+      "commandName": "Project",
+      "nativeDebugging": false
+    }
+  }
+}

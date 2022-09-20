@@ -46,5 +46,7 @@ namespace Erkunden.Client.Graphics.Objects
 			GL.DeleteShader(Handle);
 			Handle = 0;
 		}
+
+		public override string ToString() => Name;
 	}
 }

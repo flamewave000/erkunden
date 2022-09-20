@@ -1,17 +1,16 @@
-﻿using Erkunden.Client.AssetManagement.Shaders;
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 
 namespace Erkunden.Client.Lights
 {
 	public class DirectionalLight : Light
 	{
-		public Vector3 Direction = new Vector3(-1, 0, 1).Normalized();
+		public Vector3 Direction = new Vector3(-1, 0, 1);
 
-		public override void Bind(Shader shader, int index)
+		public DirectionalLight() : base(LightType.Directional) { }
+
+		protected override void FillData(ref LightData lightData)
 		{
-			base.Bind(shader, index);
-			shader.SetInt("u_Lights[" + index + "].type", (int)LightType.Directional);
-			shader.SetVector3("u_Lights[" + index + "].direction", Direction.Normalized());
+			lightData.Direction = new Vector4(Direction.Normalized(), 0);
 		}
 	}
 }

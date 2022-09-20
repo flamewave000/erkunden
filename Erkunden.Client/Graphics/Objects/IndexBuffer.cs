@@ -23,7 +23,7 @@ namespace Erkunden.Client.Graphics.Objects
 		public void SetData(in uint[] data)
 		{
 			Length = data.Length;
-			internalBuffer.SetData(data, sizeof(uint), BufferUsageHint.StaticDraw);
+			internalBuffer.SetData(data, BufferUsageHint.StaticDraw);
 		}
 
 

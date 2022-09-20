@@ -1,5 +1,6 @@
 ﻿using Erkunden.Core.Util;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 
 namespace Erkunden.Client.Utils
 {
@@ -12,5 +13,8 @@ namespace Erkunden.Client.Utils
 				Log.WriteLine("@red;Error! " + error.ToString());
 			return error;
 		}
+
+		public static Color4 Mult(this Color4 self, float scalar) =>
+			new Color4(self.R * scalar, self.G * scalar, self.B * scalar, self.A * scalar);
 	}
 }

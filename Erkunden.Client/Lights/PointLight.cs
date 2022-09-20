@@ -1,5 +1,4 @@
-﻿using Erkunden.Client.AssetManagement.Shaders;
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 
 namespace Erkunden.Client.Lights
 {
@@ -10,14 +9,15 @@ namespace Erkunden.Client.Lights
 		public float QuadraticFalloff = 0.2f;
 		public Vector3 Position = Vector3.Zero;
 
-		public override void Bind(Shader shader, int index)
+		protected PointLight(LightType type) : base(type) { }
+		public PointLight() : base(LightType.Point) { }
+
+		protected override void FillData(ref LightData lightData)
 		{
-			base.Bind(shader, index);
-			shader.SetInt("u_Lights[" + index + "].type", (int)LightType.Point);
-			shader.SetVector3("u_Lights[" + index + "].position", Position);
-			shader.SetFloat("u_Lights[" + index + "].constant", Constant);
-			shader.SetFloat("u_Lights[" + index + "].linear", LinearFalloff);
-			shader.SetFloat("u_Lights[" + index + "].quadratic", QuadraticFalloff);
+			lightData.Linear = LinearFalloff;
+			lightData.Quadratic = QuadraticFalloff;
+			lightData.Constant = Constant;
+			lightData.Position = new Vector4(Position, 1);
 		}
 	}
 }

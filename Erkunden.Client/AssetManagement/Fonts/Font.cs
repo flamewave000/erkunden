@@ -61,6 +61,11 @@ namespace Erkunden.Client.AssetManagement.Fonts
 					cursor.X = position.X;
 					continue;
 				}
+				if (text[c] == '\t')
+				{
+					cursor.X += chars[characters[' ']].XAdvance * 4;
+					continue;
+				}
 				// If the character is unknown, use Invalid Glyph
 				if (!characters.ContainsKey(text[c]))
 					block = chars[characters[uint.MaxValue]];

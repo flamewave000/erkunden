@@ -43,7 +43,7 @@ namespace Erkunden.Client.Graphics.Objects
 		public void SetData(in VertexTextureNormal[] data)
 		{
 			Length = data.Length;
-			internalBuffer.SetData(data, VertexTextureNormal.SizeInBytes, BufferUsageHint.StaticDraw);
+			internalBuffer.SetData(data, BufferUsageHint.StaticDraw);
 		}
 
 
