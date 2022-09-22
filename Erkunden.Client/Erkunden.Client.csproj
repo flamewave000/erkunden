@@ -7,6 +7,7 @@
     <Platforms>AnyCPU</Platforms>
     <AssemblyName>Erkunden</AssemblyName>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <StartupObject>Erkunden.Client.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,6 +24,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Erkunden.Core\Erkunden.Core.csproj" />
     <ProjectReference Include="..\Erkunden.ECS\Erkunden.ECS.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Entities\Objects\" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,5 @@
 ﻿using System;
-using Erkunden.Core.Util;
+using Erkunden.Core.Utils;
 
 namespace Erkunden.Server
 {

@@ -1,7 +1,7 @@
 ﻿using Erkunden.Client.AssetManagement.Shaders;
 using Erkunden.Client.Components;
 using Erkunden.Client.Entities.Cameras;
-using Erkunden.Core.Util;
+using Erkunden.Core.Utils;
 using OpenTK.Windowing.Common;
 
 namespace Erkunden.Client.Entities.Scenes

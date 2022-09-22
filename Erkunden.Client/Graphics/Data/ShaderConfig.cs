@@ -40,7 +40,7 @@ namespace Erkunden.Client.Graphics.Data
 			Blend = true,
 
 			CullMode = CullFaceMode.Back,
-			FaceDirection = FrontFaceDirection.Cw,
+			FaceDirection = FrontFaceDirection.Ccw,
 			PolygonMode = PolygonMode.Fill,
 
 			SrcColorBlend = BlendingFactorSrc.SrcAlpha,

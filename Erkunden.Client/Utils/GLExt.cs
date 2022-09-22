@@ -1,4 +1,4 @@
-﻿using Erkunden.Core.Util;
+﻿using Erkunden.Core.Utils;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 

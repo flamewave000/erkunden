@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Erkunden.Client.AssetManagement.Materials;
 using Erkunden.Client.Graphics.Data;
-using Erkunden.Core.Util;
+using Erkunden.Core.Utils;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 

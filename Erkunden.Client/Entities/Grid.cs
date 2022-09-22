@@ -1,7 +1,7 @@
 ﻿using Erkunden.Client.AssetManagement;
 using Erkunden.Client.AssetManagement.Models;
 using Erkunden.Client.AssetManagement.Shaders;
-using Erkunden.Core.Util;
+using Erkunden.Core.Utils;
 using OpenTK.Mathematics;
 
 namespace Erkunden.Client.Entities

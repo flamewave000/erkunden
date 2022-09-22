@@ -20,7 +20,7 @@ namespace Erkunden.Client.Components
 			if (InputManager.Keyboard.IsKeyDown(Keys.D) || InputManager.Keyboard.IsKeyDown(Keys.Right)) X++;
 			if (InputManager.Keyboard.IsKeyDown(Keys.A) || InputManager.Keyboard.IsKeyDown(Keys.Left)) X--;
 			if (InputManager.Keyboard.IsKeyDown(Keys.Space)) Y++;
-			if (InputManager.Keyboard.IsKeyDown(Keys.LeftShift)) Y--;
+			if (InputManager.Keyboard.IsKeyDown(Keys.LeftControl)) Y--;
 			int total = Math.Abs(X) + Math.Abs(Y) + Math.Abs(Z);
 			Vector3 result = new Vector3(X, Y, Z);
 			return total < 2 ? result : total < 3 ? result * sqrt2 : result * sqrt3;

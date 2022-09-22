@@ -7,7 +7,10 @@ using Erkunden.Client.Entities.Scenes;
 using Erkunden.Client.Graphics.Data;
 using Erkunden.Client.Utils;
 using Erkunden.Core.Components;
-using Erkunden.Core.Util;
+using Erkunden.Core.Physics.Colliders;
+using Erkunden.Core.Physics.CollisionObjects;
+using Erkunden.Core.Utils;
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
@@ -15,23 +18,20 @@ namespace Erkunden.Client.Entities
 {
 	public class Player : ClientGameObject
 	{
-		public Momentum Momentum { get; private set; } = null!;
+		public RigidBody RigidBody { get; private set; } = null!;
 		public ThirdPersonCamera Camera = null!;
 		public Controller Controller = null!;
 		public Model Ship = null!;
 
-		private int currentZoomLevel = 3;
+		private int currentZoomLevel = 0;
 		private float[] zoomLevels = new float[]
 		{
 			0.25f, 0.5f, 0.75f, 1.0f, 2.0f, 4.0f, 8.0f
 		};
 
-		public float Acceleration = 100;
-
-		public Vector2 TiltDirection = Vector2.Zero;
-		public Vector2 TiltDirectionLerp = Vector2.Zero;
-
-		public float Speed => Momentum.Linear.LengthFast;
+		public float PrimaryThruster = 100_000;
+		public float OmniThruster = 10_000;
+		public float GyroThruster = 1;
 
 		protected override void OnSetup()
 		{
@@ -41,12 +41,14 @@ namespace Erkunden.Client.Entities
 			Controller = Add<Controller>();
 			Transform.Scale *= 100f;
 			Ship = AssetManagement.AssetProvider.Get<Model>("Fighter_Ship");
-			Momentum = Add<Momentum>();
-			Momentum.LinearDrag = Acceleration / 2;
-			Momentum.AngularDrag = MathHelper.DegreesToRadians(30) / 2;
 			GetParent<Scene>().CurrentCamera = Camera;
 			Camera.RelativePosition = ThirdPersonCamera.RelativePositionFromRadiusRotation(80f,
 				Quaternion.FromEulerAngles(MathHelper.DegreesToRadians(-15), 0, 0));
+
+			RigidBody = Add(new RigidBody(new SphereCollider(), Transform));
+			RigidBody.Mass = 10_000;
+			RigidBody.Inertia = 1_000;
+			RigidBody.Friction = 100;
 		}
 
 		public override void OnUpdate(in GameTime gameTime)
@@ -54,22 +56,21 @@ namespace Erkunden.Client.Entities
 			base.OnUpdate(gameTime);
 			HandleInput();
 
-			var deltaRot = -Controller.GetRotation();
-			var deltaPos = Vector3.Transform(Controller.GetMovement(), Transform.Rotation);
+			var deltaRot = Controller.GetRotation();
+			RigidBody.Torque = deltaRot * GyroThruster;
+			//var rotation = Transform.Rotation.Normalized();
 
-			TiltDirection = deltaPos.Zx;
+			var deltaPos = Controller.GetMovement();
+			var forward = Vector3.Transform(Vector3.UnitZ, Transform.Rotation);
+			var right = Vector3.Transform(Vector3.UnitX, Transform.Rotation);
+			var up = Vector3.Transform(Vector3.UnitY, Transform.Rotation);
+			RigidBody.Force =
+				forward * deltaPos.Z * (InputManager.Keyboard.IsKeyDown(Keys.LeftShift) ? PrimaryThruster : OmniThruster) +
+				right * deltaPos.X * OmniThruster +
+				up * deltaPos.Y * OmniThruster;
 
-			TiltDirectionLerp += (TiltDirection - TiltDirectionLerp) * 0.25f;
-
-			Momentum.LinearAccel = deltaPos * Acceleration;
-			Momentum.AngularAccel = deltaRot * MathHelper.DegreesToRadians(30);
-		}
-
-		public override void OnPostUpdate(in GameTime gameTime)
-		{
-			var velocity = new Vector3(TiltDirectionLerp.X, 0, -TiltDirectionLerp.Y);
-			Transform.Tilt = Quaternion.FromEulerAngles(velocity * MathHelper.DegreesToRadians(5f));
-			base.OnPostUpdate(gameTime);
+			if (deltaPos.Length != 0)
+				SpriteFont.DrawText("Consolas", 24, new Vector2(20, 150), deltaPos.Length.ToString(), Color4.White);
 		}
 
 		public override void OnDraw(Shader shader, in GameTime gameTime)
@@ -77,11 +78,12 @@ namespace Erkunden.Client.Entities
 			base.OnDraw(shader, gameTime);
 			Ship.Draw(shader);
 			SpriteFont.DrawText("Consolas", 20, new Vector2(20, 0), @$"
-		Position: {Round(Transform.Position)}
-		Rotation: {Round(Transform.Rotation.ToEulerAngles())}
-		   Scale: {Round(Transform.Scale)}
- Linear Velocity: {Round(Momentum.Linear)}
-Angular Velocity: {Round(Momentum.Angular)}
+ Position: {Round(Transform.Position)}
+ Rotation: {Round(Transform.Rotation.ToEulerAngles())}
+	Scale: {Round(Transform.Scale)}
+ Velocity: {Round(RigidBody.Velocity)}
+	Force: {Round(RigidBody.Force)}
+Net Force: {Round(RigidBody.NetForce)}
 ", Color4.White);
 		}
 
@@ -98,7 +100,8 @@ Angular Velocity: {Round(Momentum.Angular)}
 			if (InputManager.Keyboard.IsKeyReleased(Keys.R))
 			{
 				Transform.Reset(scale: false);
-				Momentum.Reset();
+				RigidBody.Velocity = Vector3.Zero;
+				RigidBody.AngularVelocity = Vector3.Zero;
 			}
 			if (InputManager.Keyboard.IsKeyDown(Keys.Escape))
 				GetParent<Scene>().Game.Close();

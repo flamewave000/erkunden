@@ -1,7 +1,7 @@
 ﻿namespace Erkunden.ECS
 {
-	public interface System<TData>
+	public interface ISystem<TData>
 	{
-		void Process(Entity entity, TData data);
+		void Process(Entity[] entities, TData data);
 	}
 }

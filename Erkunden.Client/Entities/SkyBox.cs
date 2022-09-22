@@ -5,7 +5,7 @@ using Erkunden.Client.AssetManagement.Shaders;
 using Erkunden.Client.AssetManagement.Textures;
 using Erkunden.Client.Entities.Scenes;
 using Erkunden.Client.Graphics.Data;
-using Erkunden.Core.Util;
+using Erkunden.Core.Utils;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 

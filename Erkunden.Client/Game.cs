@@ -12,8 +12,9 @@ using Erkunden.Client.Entities.Scenes;
 using Erkunden.Client.Graphics.Data;
 using Erkunden.Client.Utils;
 using Erkunden.Core;
+using Erkunden.Core.Physics;
 using Erkunden.Core.Systems;
-using Erkunden.Core.Util;
+using Erkunden.Core.Utils;
 using Erkunden.ECS;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
@@ -27,7 +28,8 @@ namespace Erkunden.Client
 		GameTime updateTime = new GameTime { ellapsed = 0, total = 0, ellapsedLong = 0, totalLong = 0 };
 		GameTime renderTime = new GameTime { ellapsed = 0, total = 0, ellapsedLong = 0, totalLong = 0 };
 
-		PhysicsSystem PhysicsSystem = new PhysicsSystem();
+		DynamicsSystem DynamicsSystem = new DynamicsSystem();
+		CollisionSystem CollisionSystem = new CollisionSystem();
 
 		RenderLevel[] Levels;
 		Dictionary<RenderLevel, Shader> Layers = new Dictionary<RenderLevel, Shader>();
@@ -56,6 +58,8 @@ namespace Erkunden.Client
 
 			GL.ClearColor(new Color4(32, 32, 32, 255));
 			GL.ClearDepth(float.MaxValue);
+			GL.Enable(EnableCap.CullFace);
+			GL.CullFace(CullFaceMode.Back);
 
 			ObjParser.Register();
 			MtlParser.Register();
@@ -107,11 +111,13 @@ namespace Erkunden.Client
 				gameObject.OnPreUpdate(updateTime);
 
 			// Perform Update and System Processing
-			foreach (var entity in EntityFactory.Entities)
+			Entity[] entities = EntityFactory.Entities.ToArray();
+			foreach (var entity in entities)
 			{
 				(entity as IUpdate)?.OnUpdate(updateTime);
-				PhysicsSystem.Process(entity, updateTime);
 			}
+			DynamicsSystem.Process(entities, updateTime);
+			CollisionSystem.Process(entities, updateTime);
 
 			// Perform Post-Update
 			foreach (var gameObject in gameObjects)

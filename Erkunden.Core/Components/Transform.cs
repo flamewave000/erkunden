@@ -53,16 +53,6 @@ namespace Erkunden.Core.Components
 			}
 		}
 		[IgnoreDataMember]
-		public Quaternion Tilt
-		{
-			get => tilt;
-			set
-			{
-				tilt = value;
-				IsDirty = true;
-			}
-		}
-		[IgnoreDataMember]
 		public Vector3 Position
 		{
 			get => pos;
@@ -128,9 +118,11 @@ namespace Erkunden.Core.Components
 			if (pos != Vector3.Zero)
 				Matrix4.Mult(result, Matrix4.CreateTranslation(pos), out result);
 
-			modelNormal = new Matrix3(ModelMatrix);
-			Matrix3.Invert(in modelNormal, out modelNormal);
-			Matrix3.Transpose(in modelNormal, out modelNormal);
+			var modelInverted = ModelMatrix.Inverted();
+			modelNormal = new Matrix3(
+				modelInverted.Column0.Xyz,
+				modelInverted.Column1.Xyz,
+				modelInverted.Column2.Xyz);
 		}
 
 		public override string ToString() => $"P{Position}|S{Scale}|R({Rotation})";

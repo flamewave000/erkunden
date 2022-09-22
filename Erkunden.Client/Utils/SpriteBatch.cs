@@ -21,10 +21,10 @@ namespace Erkunden.Client.Utils
 	struct SpritePlane
 	{
 		public SpriteVertex BL0;
-		public SpriteVertex TL0;
+		public SpriteVertex BR0;
 		public SpriteVertex TR0;
 		public SpriteVertex TR1;
-		public SpriteVertex BR0;
+		public SpriteVertex TL0;
 		public SpriteVertex BL1;
 		public static readonly int SizeInBytes = Unsafe.SizeOf<SpritePlane>();
 		public static readonly Vector4 TLVec = new Vector4(0, 0, 0, 1);

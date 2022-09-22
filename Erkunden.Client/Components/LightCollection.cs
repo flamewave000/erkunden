@@ -2,7 +2,7 @@
 using Erkunden.Client.AssetManagement.Shaders;
 using Erkunden.Client.Graphics.Objects;
 using Erkunden.Client.Lights;
-using Erkunden.Client.Utils;
+using Erkunden.Core.Utils;
 using OpenTK.Graphics.OpenGL4;
 
 namespace Erkunden.Client.Components

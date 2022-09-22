@@ -1,5 +1,5 @@
 ﻿using System;
-using Erkunden.Core.Util;
+using Erkunden.Core.Utils;
 using OpenTK.Graphics.OpenGL4;
 
 namespace Erkunden.Client.Graphics.Objects

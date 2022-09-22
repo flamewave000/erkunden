@@ -3,7 +3,7 @@ using Erkunden.Client.AssetManagement;
 using Erkunden.Client.AssetManagement.Models;
 using Erkunden.Client.AssetManagement.Shaders;
 using Erkunden.Core.Components;
-using Erkunden.Core.Util;
+using Erkunden.Core.Utils;
 using OpenTK.Mathematics;
 
 namespace Erkunden.Client.Entities
@@ -12,7 +12,6 @@ namespace Erkunden.Client.Entities
 	{
 		private Random Rand = new Random();
 		public Model CrateModel { get; private set; } = null!;
-		public Momentum Momentum { get; private set; } = null!;
 
 		float RandomAngle(float from, float to)
 		{
@@ -26,11 +25,11 @@ namespace Erkunden.Client.Entities
 		{
 			base.OnSetup();
 			Transform.Scale *= 5;
-			Momentum = Add<Momentum>();
 			CrateModel = AssetProvider.Get<Model>("Crate");
-			Momentum.Angular.X = MathHelper.DegreesToRadians(RandomAngle(20f, 90f));
-			Momentum.Angular.Z = MathHelper.DegreesToRadians(RandomAngle(20f, 90f));
-			Momentum.Angular.Y = MathHelper.DegreesToRadians(RandomAngle(20f, 90f));
+			//Momentum = Add<Momentum>();
+			//Momentum.Angular.X = MathHelper.DegreesToRadians(RandomAngle(20f, 90f));
+			//Momentum.Angular.Z = MathHelper.DegreesToRadians(RandomAngle(20f, 90f));
+			//Momentum.Angular.Y = MathHelper.DegreesToRadians(RandomAngle(20f, 90f));
 		}
 
 		public override void OnDraw(Shader shader, in GameTime gameTime)

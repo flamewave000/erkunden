@@ -71,6 +71,16 @@ namespace Erkunden.ECS
 		public T? Get<T>() where T : class, IComponent => Get<T>(typeof(T));
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public T? Get<T>(Type type) where T : class, IComponent => _components.TryGetValue(type, out var value) ? (T?)value : null;
+		public bool TryGet<T>(out T target) where T : class, IComponent
+		{
+			if (!_components.TryGetValue(typeof(T), out var value))
+			{
+				target = null!;
+				return false;
+			}
+			target = (T)value;
+			return true;
+		}
 		public bool TryGet(Type type, out IComponent value) => _components.TryGetValue(type, out value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
-using Erkunden.Core.Util;
+using Erkunden.Core.Utils;
 
 namespace Erkunden.Client.AssetManagement
 {

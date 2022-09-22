@@ -39,6 +39,7 @@ struct Light {
 };
 
 uniform vec3 u_EyePos;
+uniform mat3 u_ModelNormal;
 
 // #define MAX_LIGHT_COUNT 10
 // uniform int u_LightCount;
@@ -50,6 +51,7 @@ layout(binding = 0, std430) buffer LightsBuffer {
 }
 b_Lights;
 
+vec3 materialNormal;
 vec3 materialAmbient;
 vec3 materialSpecular;
 
@@ -59,10 +61,10 @@ float attenuate(Light light, float distance) {
 	return 1.0 / (light.constant + (light.linear * distance) + (light.quadratic * (distance * distance)));
 }
 
-float surfaceNormalScalar(vec3 lightNormal) { return max(dot(f_Normal, lightNormal), 0); }
+float surfaceNormalScalar(vec3 lightNormal, vec3 surfaceNormal) { return max(dot(surfaceNormal, lightNormal), 0); }
 
-vec3 CalculateSpecularColor(vec3 lightNormal, vec3 eyeNormal) {
-	return materialSpecular * pow(max(dot(reflect(-lightNormal, f_Normal), eyeNormal), 0), u_Shininess);
+vec3 CalculateSpecularColor(vec3 lightNormal, vec3 eyeNormal, vec3 surfaceNormal) {
+	return materialSpecular * pow(max(dot(reflect(-lightNormal, surfaceNormal), eyeNormal), 0), u_Shininess);
 }
 
 vec3 CalculateLightColor(Light light, float scalar) { return light.color.rgb * light.intensity * scalar; }
@@ -75,7 +77,7 @@ vec3 CalculatePointLight(Light light) {
 	// Set up light vertices
 	vec3 lightVec = light.position.xyz - f_FragPos;
 	vec3 lightNormal = normalize(lightVec);
-	float lightScalar = surfaceNormalScalar(lightNormal);
+	float lightScalar = surfaceNormalScalar(lightNormal, materialNormal);
 
 	// Calculate the attenuation for the light
 	float attenuation = attenuate(light, length(lightVec));
@@ -84,18 +86,18 @@ vec3 CalculatePointLight(Light light) {
 	// Calculate Light Colour
 	vec3 lightColor = CalculateLightColor(light, lightScalar) * attenuation * 2;
 	// Calculate Specular Colour
-	vec3 specularColor = CalculateSpecularColor(lightNormal, normalize(u_EyePos - f_FragPos)) * attenuation;
+	vec3 specularColor = CalculateSpecularColor(lightNormal, normalize(u_EyePos - f_FragPos), materialNormal) * attenuation;
 	return ambientColor + lightColor + specularColor;
 }
 
 vec3 CalculateDirectionalLight(Light light) {
-	float lightScalar = surfaceNormalScalar(normalize(light.direction.xyz));
+	float lightScalar = surfaceNormalScalar(-light.direction.xyz, materialNormal);
 	// Calculate Ambient Colour
 	vec3 ambientColor = CalculateAmbientColor(light, lightScalar);
 	// Calculate Light Colour
 	vec3 lightColor = CalculateLightColor(light, lightScalar);
 	// Calculate Specular Colour
-	vec3 specularColor = CalculateSpecularColor(light.direction.xyz, normalize(u_EyePos - f_FragPos));
+	vec3 specularColor = CalculateSpecularColor(-light.direction.xyz, normalize(u_EyePos - f_FragPos), materialNormal);
 	// Calculate the final colour
 	return lightColor + ambientColor + specularColor;
 }
@@ -108,6 +110,7 @@ void main() {
 		return;
 	}
 
+	materialNormal = getColour(vec4(f_Normal, 1), u_NormalTexture).rgb;
 	materialAmbient = getColour(u_AmbientColor, u_AmbientTexture).rgb;
 	materialSpecular = getColour(u_SpecularColor, u_SpecularTexture).rgb;
 

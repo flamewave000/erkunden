@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using Erkunden.Client.AssetManagement.Textures;
-using Erkunden.Core.Util;
+using Erkunden.Core.Utils;
 
 namespace Erkunden.Client.AssetManagement.Materials
 {

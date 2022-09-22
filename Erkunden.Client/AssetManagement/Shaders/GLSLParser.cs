@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Erkunden.Client.Graphics.Data;
 using Erkunden.Client.Graphics.Objects;
-using Erkunden.Core.Util;
+using Erkunden.Core.Utils;
 using OpenTK.Graphics.OpenGL4;
 
 namespace Erkunden.Client.AssetManagement.Shaders
@@ -193,7 +193,7 @@ namespace Erkunden.Client.AssetManagement.Shaders
 
 		private string ReadFile(FileInfo currentFile, string shaderFile)
 		{
-			string path = Path.Combine(currentFile.Directory.FullName, shaderFile);
+			string path = Path.Combine(currentFile.Directory!.FullName, shaderFile);
 			using (StreamReader stream = new StreamReader(path))
 			{
 				return stream.ReadToEnd();

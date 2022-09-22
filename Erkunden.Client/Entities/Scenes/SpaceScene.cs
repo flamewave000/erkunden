@@ -16,15 +16,21 @@ namespace Erkunden.Client.Entities.Scenes
 			CreateChild<Grid>().Transform.Position = new Vector3(0, -10f, 0);
 			CreateChild<Player>();
 
+			var planet = CreateChild<Planet>(0);
+			planet.Transform.Scale *= 1000;
+			planet.Transform.Position = new Vector3(0, 0, -1000);
+			planet.Transform.Rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, (float)Math.PI / 4);
+			//planet.Momentum.Angular = new Vector3(0, (float)Math.PI / 4, 0);
+
 			DefaultCamera.Position = new Vector3(0, 2, 5);
 
 			Lights.Add(new DirectionalLight()
 			{
 				AmbientColor = Color4.White,
-				AmbientStrength = 0.1f,
+				AmbientStrength = 0.5f,
 				Color = Color4.White,
 				ColorIntensity = 1f,
-				Direction = new Vector3(-1, 1, 1)
+				Direction = new Vector3(1, -1, -1)
 			});
 
 			var rand = new Random();

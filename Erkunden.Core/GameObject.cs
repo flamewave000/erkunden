@@ -1,5 +1,5 @@
 ﻿using Erkunden.Core.Components;
-using Erkunden.Core.Util;
+using Erkunden.Core.Utils;
 using Erkunden.ECS;
 
 namespace Erkunden.Core

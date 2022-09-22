@@ -1,4 +1,4 @@
-﻿using Erkunden.Core.Util;
+﻿using Erkunden.Core.Utils;
 
 namespace Erkunden.Core
 {

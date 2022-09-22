@@ -1,7 +1,7 @@
 ﻿using System;
 using Erkunden.Client.AssetManagement.Shaders;
 using Erkunden.Client.Graphics.Data;
-using Erkunden.Core.Util;
+using Erkunden.Core.Utils;
 
 namespace Erkunden.Client
 {

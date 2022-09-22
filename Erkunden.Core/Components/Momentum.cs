@@ -4,6 +4,7 @@ using OpenTK.Mathematics;
 
 namespace Erkunden.Core.Components
 {
+	[Obsolete]
 	public class Momentum : ECS.IComponent
 	{
 		public float LinearDrag = 0;
